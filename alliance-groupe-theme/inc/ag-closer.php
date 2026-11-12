@@ -169,6 +169,39 @@ if ( ! function_exists( 'ag_closer_est_marchand' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ag_closer_est_sante' ) ) {
+	/**
+	 * Professionnel de SANTÉ (segment #1 du filon, cf docs/FILON.md) : traite des
+	 * données de patients = données de santé. Angle conformité renforcé (HDS).
+	 * Les vétérinaires sont exclus (données animales, pas de HDS). Filtrable :
+	 * ag_closer_metiers_sante.
+	 */
+	function ag_closer_est_sante( $p ) {
+		$mots = apply_filters( 'ag_closer_metiers_sante', array(
+			'dentaire', 'dentiste', 'orthodont', 'kinésithérap', 'kinesitherap', 'kiné ', 'kine ',
+			'ostéopath', 'osteopath', 'laboratoire d\'analyses', 'laboratoire de biologie', 'analyses médicales',
+			'analyses medicales', 'centre médical', 'centre medical', 'maison de santé', 'maison de sante',
+			'maison médicale', 'maison medicale', 'cabinet médical', 'cabinet medical', 'radiolog', 'imagerie médicale',
+			'imagerie medicale', 'ophtalmo', 'pharmacie', 'sage-femme', 'sage femme', 'podolog', 'pédicure',
+			'pedicure', 'psycholog', 'psychiatr', 'infirmi', 'orthophon', 'diététicien', 'dieteticien',
+			'clinique', 'polyclinique', 'médecin', 'medecin', 'généraliste', 'generaliste', 'dermatolog',
+			'cardiolog', 'gynécolog', 'gynecolog', 'pédiatre', 'pediatre', 'chirurgien', 'ergothérap',
+			'ergotherap', 'audioprothés', 'audioprothes', 'télémédecine', 'telemedecine', 'ehpad',
+		) );
+		$type = mb_strtolower( (string) ( $p['type'] ?? '' ) );
+		$foin = $type . ' ' . mb_strtolower( (string) ( $p['name'] ?? '' ) );
+		if ( false !== mb_strpos( $foin, 'vétérinaire' ) || false !== mb_strpos( $foin, 'veterinaire' ) ) { return false; }
+		// Mots trop génériques pour un NOM d'enseigne (« La Clinique du Burger ») : seulement sur le métier.
+		$type_seul = array( 'clinique', 'polyclinique', 'chirurgien', 'médecin', 'medecin' );
+		foreach ( $mots as $m ) {
+			$m = mb_strtolower( $m );
+			$ou = in_array( $m, $type_seul, true ) ? $type : $foin;
+			if ( false !== mb_strpos( $ou, $m ) ) { return true; }
+		}
+		return false;
+	}
+}
+
 /* ── 2. Le lien « ne plus me contacter » ─────────────────────────────── */
 
 if ( ! function_exists( 'ag_closer_stop_token' ) ) {
@@ -373,9 +406,13 @@ if ( ! function_exists( 'ag_closer_redige' ) ) {
 		   exploitable) guide ce que Hugo peut mentionner. */
 		$pro_web  = function_exists( 'ag_closer_est_pro_web' ) && ag_closer_est_pro_web( $p );
 		$marchand = function_exists( 'ag_closer_est_marchand' ) && ag_closer_est_marchand( $p );
+		$sante    = function_exists( 'ag_closer_est_sante' ) && ag_closer_est_sante( $p );
 		$a11y_sc  = isset( $p['a11y_score'] ) ? (int) $p['a11y_score'] : -1;
 		$a11y_cst = trim( (string) ( $p['a11y_constat'] ?? '' ) );
 		if ( $pro_web )                { $angle = 'securite'; }
+		// Segment #1 du filon : un pro de santé avec un vrai site → conformité (données patients / HDS),
+		// AVANT l'appoint accessibilité (un centre dentaire est aussi « marchand »).
+		elseif ( $sante && 'real' === $etat ) { $angle = 'conformite'; }
 		// Appoint e-commerce : marchand avec un vrai site peu accessible → angle accessibilité (EAA).
 		elseif ( $marchand && 'real' === $etat && $a11y_sc >= 0 && $a11y_sc < 70 && '' !== $a11y_cst ) { $angle = 'accessibilite'; }
 		elseif ( 'real' !== $etat && ! $site ) { $angle = 'creation'; }
@@ -412,6 +449,15 @@ if ( ! function_exists( 'ag_closer_redige' ) ) {
 				. "  version affichee) de facon factuelle, sans denigrer son site.\n"
 				. "- Propose de lui envoyer son rapport « Tester mon site » (score + points a verifier), sans aucune intrusion.\n"
 				. "  UN SEUL appel a l'action. Ton bienveillant de confrere qui previent, pas de vendeur de peur.\n";
+			if ( $sante ) {
+				$consigne_angle .= "PRECISION — PROFESSIONNEL DE SANTE (segment prioritaire) :\n"
+					. "- Les informations de patients sont des DONNEES DE SANTE. SI son site en collecte (prise de rendez-vous en\n"
+					. "  ligne, formulaire, espace patient), leur hebergement doit etre confie a un hebergeur certifie HDS\n"
+					. "  (Code de la sante publique, art. L.1111-8). Formule-le avec un SI : tu ne sais pas ce que son site collecte.\n"
+					. "- La question a poser, avec tact : sait-il aujourd'hui ou sont hebergees ces informations, et pourrait-il\n"
+					. "  le prouver a un patient qui le demande ? Angle serenite + preuve, jamais peur ni sanction.\n"
+					. "- Vocabulaire : « patients », « secret medical », « serenite ». Pas de jargon technique.\n";
+			}
 		} elseif ( 'creation' === $angle ) {
 			$consigne_angle = "ANGLE — CREATION : il n'a pas de vrai site. Propose de lui montrer a quoi ressemblerait le sien.\n";
 		} else {
@@ -495,6 +541,22 @@ if ( ! function_exists( 'ag_closer_gabarit' ) ) {
 			$etat_g = is_array( $kg ) ? (string) ( $kg[0] ?? '' ) : (string) $kg;
 		}
 		$pro_web_g = function_exists( 'ag_closer_est_pro_web' ) && ag_closer_est_pro_web( $p );
+		$sante_g   = function_exists( 'ag_closer_est_sante' ) && ag_closer_est_sante( $p );
+		if ( 'real' === $etat_g && ! $pro_web_g && $sante_g ) {
+			// Repli SANTE (segment #1 du filon) : donnees de patients = donnees de sante → HDS si collecte en ligne.
+			// Formule au conditionnel (on ne sait pas ce que le site collecte). Aucune amende, aucune menace.
+			$corps = "Bonjour,\n\n"
+				. 'En regardant le site de ' . ( $nom ? $nom : 'votre cabinet' ) . ", je me suis pose une question que je pose "
+				. "a beaucoup de professionnels de sante : si votre site recueille des informations de patients (prise de "
+				. "rendez-vous en ligne, formulaire, espace patient), savez-vous aujourd'hui ou elles sont hebergees, et "
+				. "pourriez-vous le prouver a un patient qui vous le demande ?\n\n"
+				. "Ces informations sont des donnees de sante : leur hebergement doit etre confie a un hebergeur certifie HDS "
+				. "(Code de la sante publique, art. L.1111-8), et le RGPD (article 32) vous rend responsable des mesures de "
+				. "securite prises. Je peux vous envoyer le rapport « Tester mon site » : un etat des lieux de surface "
+				. "(certificat, en-tetes de securite, bandeau cookies), sans aucune intrusion, avec les points a verifier.\n\n"
+				. "Si cela ne vous interesse pas, le lien en bas de ce message me le fait savoir definitivement.";
+			return array( 'objet' => ( $nom ? 'Les donnees de vos patients — ' . $nom : 'Les donnees de vos patients' ), 'corps' => $corps );
+		}
 		if ( 'real' === $etat_g && ! $pro_web_g ) {
 			$corps = "Bonjour,\n\n"
 				. 'En regardant le site de ' . ( $nom ? $nom : 'votre entreprise' ) . ", je me suis pose une question simple, "

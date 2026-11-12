@@ -2311,6 +2311,10 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 			if ( function_exists( 'ag_activity_log' ) ) { ag_activity_log( '🤖 Chasse auto-amorcée : ' . count( $searches ) . ' cibles (secteur × ville).' ); }
 		}
 		if ( empty( $searches ) ) return;
+		// FILON (12/11) : re-semis versionné → les cibles SANTÉ passent en tête (cf ag-cm.php).
+		if ( function_exists( 'ag_cm_bank_reseed' ) && ag_cm_bank_reseed() > 0 ) {
+			$searches = (array) get_option( 'ag_auto_searches', array() );
+		}
 		// ROTATION : on traite un lot de cibles FRAÎCHES à chaque passage (pointeur
 		// tournant) pour explorer de nouvelles zones au lieu de re-scanner les mêmes,
 		// et étaler la dépense. Nombre par passage réglable via le filtre ag_auto_per_run.
