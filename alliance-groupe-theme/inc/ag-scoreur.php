@@ -35,6 +35,30 @@ if ( ! function_exists( 'ag_scoreur_gagnants' ) ) {
 	}
 }
 
+/* ── Prior du FILON (priorité métier décidée, pas apprise) ──────────────
+   Problème de démarrage à froid : ag_scoreur_gagnants() n'apprend un métier
+   QUE s'il a déjà converti. Avec 0 vente, rien n'est appris → le Scoreur ne
+   sait pas que la SANTÉ doit passer EN PREMIER (décision de Fabrice 29/10,
+   cf docs/FILON.md : santé #1, e-commerce #2, avocats/experts-comptables #3,
+   courtiers/assurance #4). On encode donc cette priorité comme un prior fixe.
+   Le filon = SÉCURITÉ/CONFORMITÉ (RGPD art. 32, HDS) : il ne se vend qu'à un
+   pro qui a DÉJÀ un vrai site → prior plus fort si un site existe. */
+if ( ! function_exists( 'ag_scoreur_filon_prior' ) ) {
+	function ag_scoreur_filon_prior( $p, $a_un_site ) {
+		$t = strtolower( (string) ( $p['type'] ?? '' ) . ' ' . (string) ( $p['name'] ?? '' ) );
+		$sante = array( 'dentiste', 'dentaire', 'orthodont', 'kiné', 'kine', 'ostéo', 'osteo', 'médec', 'medec', 'santé', 'sante', 'labo', 'analyses médicales', 'radiolog', 'imagerie', 'infirmi', 'podolog', 'orthophon', 'psycho', 'clinique', 'vétérinaire', 'veterinaire', 'pharmacie', 'opticien', 'audiopro', 'sage-femme', 'ophtalmo', 'dermato' );
+		$legal = array( 'avocat', 'notaire', 'huissier', 'comptable', 'expert-comptable', 'expertise comptable' );
+		$fin   = array( 'courtier', 'assurance', 'mutuelle', 'patrimoine', 'fintech' );
+		$hit   = function ( $arr ) use ( $t ) { foreach ( $arr as $k ) { if ( false !== strpos( $t, $k ) ) { return true; } } return false; };
+		$prior = 0.0;
+		if ( $hit( $sante ) )     { $prior = 28.0; } // #1 : données ultra-sensibles, obligation HDS pénale
+		elseif ( $hit( $legal ) ) { $prior = 16.0; } // secret pro (avocats = email/courrier only, géré par le closer)
+		elseif ( $hit( $fin ) )   { $prior = 14.0; } // données financières, obligation forte
+		if ( ! $a_un_site ) { $prior *= 0.35; } // sans site, la conformité ne s'applique pas encore (angle création)
+		return (float) apply_filters( 'ag_scoreur_filon_prior', $prior, $p, $a_un_site );
+	}
+}
+
 /* ── Score d'un prospect (0 = faible, plus = prioritaire) ────────────── */
 if ( ! function_exists( 'ag_scoreur_score' ) ) {
 	function ag_scoreur_score( $p, $gagnants ) {
@@ -62,6 +86,10 @@ if ( ! function_exists( 'ag_scoreur_score' ) ) {
 			// On garde un bonus modéré, sans laisser ce segment écraser la file.
 			$s += 10;
 		}
+
+		// FILON (29/10) : priorité métier décidée par Fabrice, tenue même à froid
+		// (0 vente → le signal appris $gagnants est muet). Santé d'abord.
+		$s += ag_scoreur_filon_prior( $p, '' !== $site );
 
 		// Entreprise qui peut avoir besoin d'aide : note basse malgré des avis.
 		$note = (float) ( $p['rating'] ?? 0 );
