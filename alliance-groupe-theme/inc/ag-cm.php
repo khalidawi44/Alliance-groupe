@@ -32,14 +32,19 @@ if ( ! function_exists( 'ag_cm_autofeed' ) ) {
 /* ── Banque de cibles (secteur × ville) pour relancer la chasse ──────── */
 if ( ! function_exists( 'ag_cm_bank' ) ) {
 	function ag_cm_bank() {
-		/* Secteurs recentrés sur LE FILON du canal email (voir docs/FILON.md) :
-		   des pros qui ONT un site transactionnel/vitrine à forte valeur (donc
-		   joignables par contact@ et avec un vrai budget web) plutôt que des
-		   micro-artisans souvent sans site. Priorité : commerce/e-commerce,
-		   immobilier, hôtellerie-tourisme, santé de groupe. */
-		$secteurs = array( 'prêt-à-porter', 'bijouterie', 'caviste', 'magasin de meubles',
-			'épicerie fine', 'concept store', 'agence immobilière', 'hôtel',
-			'restaurant', 'camping', 'centre dentaire', 'clinique vétérinaire' );
+		/* Secteurs recentrés sur LE FILON sécurité/conformité (voir docs/FILON.md) :
+		   on vise en PRIORITÉ les structures qui TRAITENT des données sensibles et
+		   sont exposées (RGPD art. 32 + HDS pour la santé), ont un vrai site joignable
+		   par contact@ et un budget. Ordre du filon : santé de groupe #1, e-commerce #2.
+		   On écarte les secteurs à faible exposition données (restauration, camping…)
+		   pour concentrer la chasse là où l'angle « conformité » porte. */
+		$secteurs = array(
+			// Santé de groupe (#1) — données de santé, forte exposition art. 32 / HDS.
+			'centre médical', 'maison de santé', 'laboratoire d\'analyses médicales',
+			'centre dentaire', 'centre d\'imagerie médicale', 'pharmacie', 'clinique vétérinaire',
+			// E-commerce / commerce à données clients (#2) — site transactionnel, paniers, comptes.
+			'prêt-à-porter', 'bijouterie', 'concept store', 'agence immobilière', 'hôtel',
+		);
 		$villes = array( 'Nantes', 'Saint-Nazaire', 'Rennes', 'Angers', 'Vannes',
 			'La Roche-sur-Yon', 'Cholet', 'Saint-Herblain', 'Rezé', 'Lorient' );
 		$bank = array();
