@@ -834,6 +834,11 @@ if ( ! function_exists( 'ag_prospect_score' ) ) {
 		$type = strtolower( $p['type'] ?? '' );
 		$hot  = array( 'restaurant', 'coiffeur', 'barbier', 'institut', 'beauté', 'plombier', 'électricien', 'garagiste', 'artisan', 'boulangerie', 'bar', 'coach', 'photographe', 'fleuriste', 'immobil', 'dentiste', 'opticien' );
 		foreach ( $hot as $h ) { if ( false !== strpos( $type, $h ) ) { $s += 6; break; } }
+		// Bonus FILON conformité (docs/FILON.md) : santé de groupe #1 (données sensibles,
+		// art. 32 / HDS) = cible prioritaire de l'angle « conformité ». On la fait remonter
+		// en tête de la file d'Hugo, car le plafond éco ne laisse partir que les mieux notés.
+		$filon = array( 'médical', 'medical', 'santé', 'sante', 'clinique', 'laboratoire', 'labo', 'pharmac', 'imagerie', 'radiolog', 'médecin', 'medecin', 'maison de santé', 'ophtalmo', 'cardiolog', 'dermatolog' );
+		foreach ( $filon as $h ) { if ( false !== strpos( $type, $h ) ) { $s += 12; break; } }
 		return max( 0, min( 100, $s ) );
 	}
 }
