@@ -215,9 +215,14 @@ if ( ! function_exists( 'ag_prospect_diagnostic' ) ) {
 			if ( $r < 3.5 )       $bits[] = '⚠ note ' . number_format( $r, 1, ',', '' ) . ' (réputation à redresser)';
 			elseif ( $r >= 4.5 )  $bits[] = '👍 note ' . number_format( $r, 1, ',', '' );
 		}
-		if ( 'real' !== $kind || $n < 10 ) $concl = '🎯 a besoin de clients';
-		elseif ( $r >= 4.5 && $n >= 50 )   $concl = '💪 marche bien (vise refonte/SEO)';
-		else                               $concl = '🟡 potentiel à creuser';
+		$regule = function_exists( 'ag_prospect_secteur_regule' ) ? ag_prospect_secteur_regule( $p['type'] ?? '' ) : '';
+		if ( 'real' === $kind && '' !== $regule ) {
+			$bits[] = ( 'sante' === $regule ) ? '🛡️ secteur santé (données sensibles)' : '🛡️ secteur réglementé';
+		}
+		if ( 'real' === $kind && '' !== $regule ) $concl = '🛡️ cible conformité (audit + abonnement, art. 32)';
+		elseif ( 'real' !== $kind || $n < 10 )    $concl = '🎯 a besoin de clients';
+		elseif ( $r >= 4.5 && $n >= 50 )          $concl = '💪 marche bien (vise refonte/SEO)';
+		else                                      $concl = '🟡 potentiel à creuser';
 		return implode( ' · ', $bits ) . ' — ' . $concl;
 	}
 }
@@ -812,12 +817,54 @@ add_action( 'admin_post_ag_search_history_delete', function () {
 } );
 
 /* ── 5. Priorité (qui en a vraiment besoin), pourquoi, et message émotionnel ─ */
+if ( ! function_exists( 'ag_prospect_secteur_regule' ) ) {
+	/**
+	 * Secteur « réglementé » au sens du FILON sécurité/conformité (RGPD art. 32,
+	 * HDS pour la santé) : professionnels qui TRAITENT des données sensibles ou
+	 * à enjeu, pour qui la question « pouvez-vous prouver vos mesures ? » mord.
+	 * Ordre des segments du filon : santé #1, e-commerce #2, avocats #3,
+	 * courtiers/fintech/assurance #4. Utilisé par le scoreur pour faire remonter
+	 * ces cibles LORSQU'ELLES ONT DÉJÀ un vrai site (angle `conformite` du closer).
+	 *
+	 * @return string '' si non réglementé, sinon la famille (sante|juridique|finance|immobilier).
+	 */
+	function ag_prospect_secteur_regule( $type ) {
+		$t = strtolower( (string) $type );
+		$has = function ( $needles ) use ( $t ) {
+			foreach ( (array) $needles as $n ) { if ( '' !== $n && false !== strpos( $t, $n ) ) return true; }
+			return false;
+		};
+		$map = (array) apply_filters( 'ag_prospect_secteurs_regules', array(
+			'sante'      => array( 'dentiste', 'dentaire', 'kiné', 'kine', 'ostéo', 'osteo', 'médecin', 'medecin', 'médical', 'medical', 'paramédical', 'paramedical', 'infirmier', 'infirmière', 'infirmiere', 'pharmac', 'opticien', 'podologue', 'podo', 'orthop', 'psycho', 'laboratoire', 'labo', 'clinique', 'cabinet médical', 'cabinet medical', 'radiolog', 'vétérin', 'veterin', 'sage-femme', 'sage femme', 'ophtalmo', 'dermatolog' ),
+			'juridique'  => array( 'avocat', 'notaire', 'huissier', 'juriste', 'commissaire de justice' ),
+			'finance'    => array( 'assurance', 'courtier', 'mutuelle', 'comptable', 'expert-comptable', 'expert comptable', 'banque', 'gestion de patrimoine', 'crédit', 'credit', 'fintech' ),
+			'immobilier' => array( 'agence immobil', 'immobilier', 'immobilière', 'immobiliere', 'syndic' ),
+		) );
+		foreach ( $map as $famille => $needles ) { if ( $has( $needles ) ) return (string) $famille; }
+		return '';
+	}
+}
 if ( ! function_exists( 'ag_prospect_score' ) ) {
-	/** Score 0-100 de PROBABILITÉ D'ACHAT : un commerce actif & populaire SANS vrai site = acheteur idéal. */
+	/**
+	 * Score 0-100 de PROBABILITÉ D'ACHAT. DEUX filons coexistent :
+	 *  - CRÉATION : un commerce actif & populaire SANS vrai site = acheteur d'un site.
+	 *  - SÉCURITÉ/CONFORMITÉ (filon moteur, pivot 29/10) : un professionnel RÉGLEMENTÉ
+	 *    (santé, juridique, finance, immobilier) qui a DÉJÀ un vrai site = cible de
+	 *    l'audit payant + abonnement (angle `conformite`). Sans ce correctif, « a un
+	 *    vrai site » plafonnait à 6 → en mode éco (top ~8/j) Hugo ne les atteignait
+	 *    jamais, alors que le closer et les offres sont prêts pour eux.
+	 */
 	function ag_prospect_score( $p ) {
 		$kind = ag_site_kind( $p['website'] ?? '' )[0];
-		// Le manque (pas de vrai site) = le plus gros levier d'achat → priorité forte.
+		$type = strtolower( $p['type'] ?? '' );
+		// Le manque (pas de vrai site) = le plus gros levier d'achat de CRÉATION → priorité forte.
 		$s = ( 'none' === $kind ) ? 62 : ( ( 'social' === $kind ) ? 55 : 6 );
+		// FILON SÉCURITÉ : secteur réglementé AVEC un vrai site = cible conformité → fait remonter
+		// la fiche au niveau des « sans site » (sans écraser le filon création : les deux coexistent).
+		$famille_regulee = ag_prospect_secteur_regule( $type );
+		if ( 'real' === $kind && '' !== $famille_regulee ) {
+			$s += ( 'sante' === $famille_regulee ) ? 46 : 40; // santé #1 du filon (HDS/art. 32 = pénal).
+		}
 		// Activité / demande réelle : beaucoup d'avis = clients + budget = plus susceptible d'acheter.
 		$rev = (int) ( $p['reviews'] ?? 0 );
 		if ( $rev >= 300 )      $s += 25;
@@ -831,7 +878,6 @@ if ( ! function_exists( 'ag_prospect_score' ) ) {
 		// Joignable tout de suite.
 		if ( ! empty( $p['phone'] ) ) $s += 6;
 		// Léger bonus secteurs où le web convertit fort (mais TOUS secteurs sont gardés).
-		$type = strtolower( $p['type'] ?? '' );
 		$hot  = array( 'restaurant', 'coiffeur', 'barbier', 'institut', 'beauté', 'plombier', 'électricien', 'garagiste', 'artisan', 'boulangerie', 'bar', 'coach', 'photographe', 'fleuriste', 'immobil', 'dentiste', 'opticien' );
 		foreach ( $hot as $h ) { if ( false !== strpos( $type, $h ) ) { $s += 6; break; } }
 		return max( 0, min( 100, $s ) );
