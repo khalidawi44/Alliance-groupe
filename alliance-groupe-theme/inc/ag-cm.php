@@ -32,14 +32,21 @@ if ( ! function_exists( 'ag_cm_autofeed' ) ) {
 /* ── Banque de cibles (secteur × ville) pour relancer la chasse ──────── */
 if ( ! function_exists( 'ag_cm_bank' ) ) {
 	function ag_cm_bank() {
-		/* Secteurs recentrés sur LE FILON du canal email (voir docs/FILON.md) :
-		   des pros qui ONT un site transactionnel/vitrine à forte valeur (donc
-		   joignables par contact@ et avec un vrai budget web) plutôt que des
-		   micro-artisans souvent sans site. Priorité : commerce/e-commerce,
-		   immobilier, hôtellerie-tourisme, santé de groupe. */
-		$secteurs = array( 'prêt-à-porter', 'bijouterie', 'caviste', 'magasin de meubles',
-			'épicerie fine', 'concept store', 'agence immobilière', 'hôtel',
-			'restaurant', 'camping', 'centre dentaire', 'clinique vétérinaire' );
+		/* Secteurs ordonnés sur LE FILON (voir docs/FILON.md) : #1 SANTÉ (vrai
+		   site + données patients → RGPD art. 32 / HDS, angle conformité d'Hugo,
+		   boostés par le scoreur) EN TÊTE, puis professions réglementées
+		   (comptable/immobilier), puis le #2 lot e-commerce/retail (angle
+		   accessibilité EAA + cookies). La chasse économe traite peu de cibles
+		   par passage : mettre la santé en tête garantit qu'elle est huntée. */
+		$secteurs = array(
+			// #1 filon : santé (site + données patients → conformité art. 32 / HDS)
+			'centre dentaire', 'cabinet dentaire', 'cabinet médical', 'centre de santé',
+			'laboratoire d\'analyses médicales', 'cabinet de kinésithérapie',
+			'clinique vétérinaire', 'centre d\'imagerie médicale', 'pharmacie',
+			// professions réglementées (finance / immobilier — scoreur boosté)
+			'cabinet comptable', 'agence immobilière',
+			// #2 lot : e-commerce / retail (angle accessibilité EAA + cookies)
+			'prêt-à-porter', 'bijouterie', 'caviste', 'concept store', 'hôtel', 'restaurant' );
 		$villes = array( 'Nantes', 'Saint-Nazaire', 'Rennes', 'Angers', 'Vannes',
 			'La Roche-sur-Yon', 'Cholet', 'Saint-Herblain', 'Rezé', 'Lorient' );
 		$bank = array();
@@ -47,6 +54,27 @@ if ( ! function_exists( 'ag_cm_bank' ) ) {
 		return $bank;
 	}
 }
+
+/* ── Migration : re-amorce la chasse auto sur la banque à jour (SANTÉ en tête).
+   On NE touche QUE si la liste stockée est vide OU strictement = l'ancienne
+   banque auto (retail) ; jamais une liste personnalisée à la main par Fabrice. */
+add_action( 'init', function () {
+	if ( '2026-11-16-sante' === get_option( 'ag_cm_bank_v' ) ) return;
+	$old_secteurs = array( 'prêt-à-porter', 'bijouterie', 'caviste', 'magasin de meubles',
+		'épicerie fine', 'concept store', 'agence immobilière', 'hôtel',
+		'restaurant', 'camping', 'centre dentaire', 'clinique vétérinaire' );
+	$old_villes = array( 'Nantes', 'Saint-Nazaire', 'Rennes', 'Angers', 'Vannes',
+		'La Roche-sur-Yon', 'Cholet', 'Saint-Herblain', 'Rezé', 'Lorient' );
+	$old_bank = array();
+	foreach ( $old_villes as $v ) { foreach ( $old_secteurs as $sec ) { $old_bank[] = array( 'q' => $sec, 'city' => $v ); } }
+	$cur = (array) get_option( 'ag_auto_searches', array() );
+	if ( ( empty( $cur ) || $cur == $old_bank ) && function_exists( 'ag_cm_bank' ) ) {
+		update_option( 'ag_auto_searches', ag_cm_bank(), false );
+		update_option( 'ag_auto_search_i', 0, false );
+		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🔄 Chasse ré-amorcée sur le filon SANTÉ (banque secteurs mise à jour).' );
+	}
+	update_option( 'ag_cm_bank_v', '2026-11-16-sante', false );
+}, 20 );
 
 /* ── Compte des événements tunnel sur une fenêtre ────────────────────── */
 if ( ! function_exists( 'ag_cm_compte' ) ) {
