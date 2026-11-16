@@ -280,6 +280,34 @@ add_action( 'admin_post_ag_prospect_save', function () {
 	) );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects', 'saved' => $ok ? 1 : 0, 'dup' => $ok ? 0 : 1 ), admin_url( 'admin.php' ) ) ); exit;
 } );
+/* ── 4b. Import en masse : coller une liste (Nom ; Ville ; Site ; Email ; Tel ; Type) ─ */
+add_action( 'admin_post_ag_prospect_import', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
+	$raw   = (string) wp_unslash( $_POST['bulk'] ?? '' );
+	$lines = preg_split( '/\r\n|\r|\n/', $raw );
+	$added = 0; $dup = 0; $skip = 0;
+	foreach ( (array) $lines as $line ) {
+		$line = trim( $line );
+		if ( '' === $line ) continue;
+		$sep  = ( false !== strpos( $line, "\t" ) ) ? "\t" : ';';
+		$cols = array_map( 'trim', explode( $sep, $line ) );
+		$name = $cols[0] ?? '';
+		if ( mb_strlen( $name ) < 2 ) { $skip++; continue; }
+		$website = $cols[2] ?? '';
+		if ( '' !== $website && ! preg_match( '#^https?://#i', $website ) ) $website = 'https://' . $website;
+		$ok = ag_prospect_add_record( array(
+			'name'    => sanitize_text_field( $name ),
+			'city'    => sanitize_text_field( $cols[1] ?? '' ),
+			'website' => esc_url_raw( $website ),
+			'email'   => sanitize_email( $cols[3] ?? '' ),
+			'phone'   => sanitize_text_field( $cols[4] ?? '' ),
+			'type'    => sanitize_text_field( $cols[5] ?? '' ),
+			'source'  => 'import',
+		) );
+		if ( $ok ) $added++; else $dup++;
+	}
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects', 'imp_add' => $added, 'imp_dup' => $dup, 'imp_skip' => $skip ), admin_url( 'admin.php' ) ) ); exit;
+} );
 add_action( 'admin_post_ag_prospect_update', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
 	$id  = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
@@ -1904,6 +1932,21 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<input type="email" name="email" placeholder="Email" style="width:200px;">
 					<input type="url" name="website" placeholder="Site web (si existant)" style="width:200px;">
 					<?php submit_button( 'Ajouter', 'secondary', 'submit', false ); ?>
+				</form>
+			</div>
+
+			<!-- Import en masse (coller une liste) -->
+			<div style="max-width:980px;margin-top:14px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-radius:6px;">
+				<h2 style="margin-top:0;">📥 Importer une liste (coller)</h2>
+				<?php if ( isset( $_GET['imp_add'] ) ) : ?>
+					<div class="notice notice-success inline" style="margin:0 0 10px;"><p><strong><?php echo (int) $_GET['imp_add']; ?></strong> ajouté(s) · <?php echo (int) ( $_GET['imp_dup'] ?? 0 ); ?> doublon(s) ignoré(s) · <?php echo (int) ( $_GET['imp_skip'] ?? 0 ); ?> ligne(s) vide(s).</p></div>
+				<?php endif; ?>
+				<p style="margin:0 0 8px;color:#50575e;font-size:.9em;">Une entreprise par ligne. Colonnes séparées par <strong>;</strong> (ou une tabulation si tu colles depuis un tableur), dans l'ordre :<br><code>Nom ; Ville ; Site web ; Email ; Téléphone ; Type</code>. Seul le <strong>Nom</strong> est obligatoire ; les doublons sont écartés automatiquement.</p>
+				<form method="post" action="<?php echo esc_url( $post ); ?>">
+					<input type="hidden" name="action" value="ag_prospect_import">
+					<input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
+					<textarea name="bulk" rows="7" style="width:100%;font-family:monospace;font-size:.86em;" placeholder="Cabinet Dentaire Durand ; Nantes ; https://cabinet-durand.fr ; contact@cabinet-durand.fr ; 02 40 00 00 00 ; dentiste"></textarea><br>
+					<?php submit_button( 'Importer la liste', 'primary', 'submit', false ); ?>
 				</form>
 			</div>
 
