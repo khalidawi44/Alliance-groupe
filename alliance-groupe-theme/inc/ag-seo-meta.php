@@ -274,9 +274,6 @@ add_filter( 'ag_skip_legacy_meta_description', function ( $skip ) {
 // Marrakech (inexistant) ne doivent JAMAIS revenir ici : ce sont des donnees
 // structurees, donc des declarations faites a Google.
 add_action( 'wp_head', function () {
-	if ( ! is_page() ) return;
-	$slug = get_post_field( 'post_name' );
-
 	$bureaux = array(
 		'bureau-nantes' => array(
 			'name'     => 'Alliance Groupe — Nantes',
@@ -289,14 +286,23 @@ add_action( 'wp_head', function () {
 		),
 	);
 
-	if ( ! isset( $bureaux[ $slug ] ) ) return;
-	$b = $bureaux[ $slug ];
+	// La home porte la fiche du lieu REEL (Nantes) + la note Google ; les pages
+	// « bureau » gardent la leur. Partout ailleurs : rien (pas de fiche inventee).
+	if ( is_front_page() || is_home() ) {
+		$b   = $bureaux['bureau-nantes'];
+		$url = home_url( '/' );
+	} elseif ( is_page() && isset( $bureaux[ get_post_field( 'post_name' ) ] ) ) {
+		$b   = $bureaux[ get_post_field( 'post_name' ) ];
+		$url = get_permalink();
+	} else {
+		return;
+	}
 
 	$lb = array(
 		'@context'  => 'https://schema.org',
 		'@type'     => 'ProfessionalService',
 		'name'      => $b['name'],
-		'url'       => get_permalink(),
+		'url'       => $url,
 		'telephone' => '+33744829516',
 		'email'     => 'contact@alliancegroupe-inc.com',
 		'address'   => array(
@@ -321,6 +327,18 @@ add_action( 'wp_head', function () {
 			'name'  => $b['locality'],
 		),
 	);
+
+	// aggregateRating : note Google REELLE uniquement (via le module geo, jamais de faux avis).
+	if ( function_exists( 'ag_geo_google_data' ) ) {
+		$gd = ag_geo_google_data();
+		if ( ! empty( $gd['total'] ) && ! empty( $gd['rating'] ) ) {
+			$lb['aggregateRating'] = array(
+				'@type'       => 'AggregateRating',
+				'ratingValue' => (string) $gd['rating'],
+				'reviewCount' => (string) $gd['total'],
+			);
+		}
+	}
 	echo '<script type="application/ld+json">' . wp_json_encode( $lb, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 }, 6 );
 
