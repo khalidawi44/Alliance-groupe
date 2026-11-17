@@ -113,7 +113,7 @@
 `/run`, `/worker` (pilote) · `/inbound` (SMS/appel entrant) · `/google-lead` · `/reponse` · `/voice` · `/vapid` `/push-subscribe` `/push-unsubscribe` · `/judilibre*` · `/pentest-next` `/pentest-report`. Plugin licences : `/stripe-webhook`, `/licence/*`, `/update-check`, `/download/{slug}`.
 
 ### AJAX (`wp_ajax_ag_*`) — gros pourvoyeurs
-`inc/ag-prospection.php` (ag_lead, ag_prospect_add/_touch/_reply/_outcome/_relance/_delete_bulk/_sms_bulk…), concierge, refais-mon-site, devis-instant, site-creator, visiteurs, ma-prospection, voice-webhook, agences, composants, candidatures, appels-offres, missions, recrut-intl, tester.
+`inc/ag-prospection.php` (ag_lead, ag_prospect_add/_bulk [import liste collée, admin_post]/_touch/_reply/_outcome/_relance/_delete_bulk/_sms_bulk…), concierge, refais-mon-site, devis-instant, site-creator, visiteurs, ma-prospection, voice-webhook, agences, composants, candidatures, appels-offres, missions, recrut-intl, tester.
 
 ### Crons (hook → fréquence)
 `ag_prospect_cron` (daily, aussi via /run) · `ag_relance_cron` (daily 9h30) · `ag_closer_cron` (hourly) · `ag_boite_cron` (10 min) · `ag_enrich_cron` (3h) · `ag_rc_cron` (10h) · `ag_coach_daily` (8h) · `ag_nuit_cron` (daily) · `ag_social_daily` · `ag_autopub_cron` (hebdo) · `ag_cand_daily_cron` · `ag_amb_inactivity_cron` (8h) · `ag_reseau_cron` · `ag_boamp_daily` (8h15) · `ag_tirage_cron` (mensuel) · `ag_client_daily` (9h) · `ag_amb_daily` (8h30) · `ag_auto_wpcron` (hourly, filet).

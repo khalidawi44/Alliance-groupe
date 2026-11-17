@@ -280,6 +280,44 @@ add_action( 'admin_post_ag_prospect_save', function () {
 	) );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects', 'saved' => $ok ? 1 : 0, 'dup' => $ok ? 0 : 1 ), admin_url( 'admin.php' ) ) ); exit;
 } );
+/* ── Import EN MASSE (coller une liste) ───────────────────────────────────
+ * Permet de constituer une liste qualifiée (ex. filon santé/conformité)
+ * SANS brûler le quota Google Places : on colle des cibles trouvées
+ * gratuitement (Maps / annuaires / web), 1 par ligne. Réutilise
+ * ag_prospect_add_record() → dédoublonnage, auto-assignation de zone et
+ * audit passif gardés. Format par ligne (séparateur ; ou tabulation) :
+ *   Nom ; Ville ; Email ; Site ; Téléphone ; Type
+ * Seul le Nom est obligatoire ; les colonnes suivantes sont facultatives.
+ */
+add_action( 'admin_post_ag_prospect_bulk', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
+	$raw   = (string) wp_unslash( $_POST['bulk'] ?? '' );
+	$type0 = sanitize_text_field( wp_unslash( $_POST['bulk_type'] ?? '' ) ); // type par défaut (ex. « dentiste »)
+	$lines = preg_split( '/\r\n|\r|\n/', $raw );
+	$added = 0; $skip = 0; $total = 0;
+	foreach ( (array) $lines as $i => $line ) {
+		$line = trim( $line );
+		if ( '' === $line || '#' === $line[0] ) continue;              // vide / commentaire
+		$cols = preg_split( '/\t|;|\|/', $line );                       // ; | tab | pipe
+		$cols = array_map( 'trim', (array) $cols );
+		$name = $cols[0] ?? '';
+		if ( '' === $name ) { continue; }
+		// Ligne d'en-tête éventuelle (1re ligne « Nom / Name ») → ignorée.
+		if ( 0 === $total && preg_match( '/^(nom|name|entreprise)$/i', $name ) ) { continue; }
+		$total++;
+		$ok = ag_prospect_add_record( array(
+			'name'    => sanitize_text_field( $name ),
+			'city'    => sanitize_text_field( $cols[1] ?? '' ),
+			'email'   => sanitize_email( $cols[2] ?? '' ),
+			'website' => esc_url_raw( $cols[3] ?? '' ),
+			'phone'   => sanitize_text_field( $cols[4] ?? '' ),
+			'type'    => sanitize_text_field( ( $cols[5] ?? '' ) !== '' ? $cols[5] : $type0 ),
+			'source'  => 'liste',
+		) );
+		if ( $ok ) { $added++; } else { $skip++; }
+	}
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects', 'bulk_added' => $added, 'bulk_skip' => $skip, 'bulk_total' => $total ), admin_url( 'admin.php' ) ) ); exit;
+} );
 add_action( 'admin_post_ag_prospect_update', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
 	$id  = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
@@ -1893,6 +1931,9 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 
 			<!-- Ajout manuel -->
 			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-radius:6px;">
+				<?php if ( isset( $_GET['bulk_added'] ) ) : $ba = (int) $_GET['bulk_added']; $bs = (int) ( $_GET['bulk_skip'] ?? 0 ); ?>
+					<div class="notice notice-success is-dismissible" style="margin:0 0 12px;"><p><strong><?php echo $ba; ?></strong> prospect(s) ajouté(s)<?php if ( $bs ) echo ', ' . $bs . ' ignoré(s) (doublon ou déjà présent)'; ?>. Ils entrent dans la file d'Hugo avec les mêmes garde-fous.</p></div>
+				<?php endif; ?>
 				<h2 style="margin-top:0;">➕ Ajouter un prospect à la main</h2>
 				<form method="post" action="<?php echo esc_url( $post ); ?>">
 					<input type="hidden" name="action" value="ag_prospect_save">
@@ -1905,6 +1946,17 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<input type="url" name="website" placeholder="Site web (si existant)" style="width:200px;">
 					<?php submit_button( 'Ajouter', 'secondary', 'submit', false ); ?>
 				</form>
+				<details style="margin-top:14px;border-top:1px solid #eee;padding-top:12px;">
+					<summary style="cursor:pointer;font-weight:700;color:#2271b1;">📋 Coller une liste (import en masse) — pour constituer une file qualifiée sans quota Places</summary>
+					<p class="description" style="margin:8px 0;">Une cible par ligne, colonnes séparées par <code>;</code> (ou tabulation). Seul le <strong>Nom</strong> est obligatoire.<br>Ordre : <code>Nom ; Ville ; Email ; Site ; Téléphone ; Type</code>. Les lignes commençant par <code>#</code> sont ignorées. Doublons et cibles « ne plus contacter » écartés automatiquement.</p>
+					<form method="post" action="<?php echo esc_url( $post ); ?>">
+						<input type="hidden" name="action" value="ag_prospect_bulk">
+						<input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
+						<textarea name="bulk" rows="7" style="width:100%;max-width:960px;font-family:monospace;font-size:.85rem;" placeholder="# Nom ; Ville ; Email ; Site ; Téléphone ; Type&#10;Cabinet Dentaire des Halles ; Nantes ; contact@cabinet-halles.fr ; cabinet-halles.fr ; 02 40 00 00 00 ; dentiste&#10;Clinique Vétérinaire du Parc ; Nantes ; ; clinique-parc.fr ; ; vétérinaire"></textarea><br>
+						<input type="text" name="bulk_type" placeholder="Type par défaut (ex. dentiste)" style="width:220px;margin:8px 8px 0 0;">
+						<?php submit_button( 'Importer la liste', 'primary', 'submit', false ); ?>
+					</form>
+				</details>
 			</div>
 
 			<!-- Mes prospects -->
