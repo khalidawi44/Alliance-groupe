@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18d</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18d</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18e</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18e</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -625,6 +625,28 @@ function bbGapAnalyze(){
   h+='<div class="exp" style="margin-top:8px">➡️ Concentre tes crédits sur le <b>🟢 vert</b>, de préférence sur des <b>fonctionnalités récentes ou peu visibles</b>. Les titres Hacktivity sont souvent masqués : c\'est une <b>orientation</b>, pas une garantie zéro doublon. <b>Les étapes de la route sont maintenant colorées</b> selon ces manques (🟢 vise / 🔴 évite) — régénère la route si besoin.</div>';
   out.innerHTML=h;
   try{ bbColorRoute(); }catch(e){}
+  try{ bbPersist(); }catch(e){}
+}
+/* Mémorise l'espace bug bounty (Hacktivity + manques + cerveau IA) pour qu'il survive au refresh. */
+function bbPersist(){
+  try{
+    var g=function(id,prop){ var e=document.getElementById(id); return e?(e[prop]||''):''; };
+    var d={ hack:g('bbHacktivity','value'), gapOut:g('bbGapOut','innerHTML'), gapStatus:(window.__AG_GAP_STATUS||null),
+            brainIn:g('bbBrainIn','value'), brainOut:g('bbBrainOut','innerHTML') };
+    localStorage.setItem('ag_bb_ws', JSON.stringify(d));
+  }catch(e){}
+}
+var _AG_BBP_T=null;
+function bbPersistSoon(){ try{ clearTimeout(_AG_BBP_T); }catch(e){} _AG_BBP_T=setTimeout(bbPersist,500); }
+function bbRestore(){
+  try{
+    var raw=localStorage.getItem('ag_bb_ws'); if(!raw) return; var d=JSON.parse(raw)||{};
+    var set=function(id,prop,v){ var e=document.getElementById(id); if(e&&v) e[prop]=v; };
+    set('bbHacktivity','value',d.hack); set('bbGapOut','innerHTML',d.gapOut);
+    if(d.gapStatus) window.__AG_GAP_STATUS=d.gapStatus;
+    set('bbBrainIn','value',d.brainIn); set('bbBrainOut','innerHTML',d.brainOut);
+    try{ bbColorRoute(); }catch(e){}
+  }catch(e){}
 }
 /* Colore les étapes de la route Bug Bounty selon l'analyse des manques (🟢 libre = vise / 🔴 saturé = évite). */
 function bbColorRoute(){
@@ -670,8 +692,16 @@ function bbBrain(){
   try{ agApi('ag_bb_brain','/ag/v1/bb-brain','POST',{context:ctx.slice(0,60000), cible:cible}).then(function(j){
     if(j&&j.ok&&j.text){ o.innerHTML='<div class="verdict ok" style="white-space:pre-wrap">'+esc(j.text)+'</div><div class="exp" style="margin-top:4px;opacity:.6">modèle : '+esc(j.model||'')+'</div>'; }
     else { o.innerHTML='<span style="color:#f87171">⚠️ '+esc((j&&j.error)||'échec')+'</span><br><span class="exp">Si c\'est la clé : clique « 🔑 Ma clé IA » (connecté en admin WordPress).</span>'; }
-  }).catch(function(){ o.innerHTML='<span style="color:#f87171">⚠️ Appel IA impossible. Connecte-toi en admin WordPress dans cet onglet, et enregistre ta clé (🔑 Ma clé IA).</span>'; }); }catch(e){ o.innerHTML='<span style="color:#f87171">⚠️ erreur</span>'; }
+    try{ bbPersist(); }catch(e){}
+  }).catch(function(){ o.innerHTML='<span style="color:#f87171">⚠️ Appel IA impossible. Connecte-toi en admin WordPress dans cet onglet, et enregistre ta clé (🔑 Ma clé IA).</span>'; try{ bbPersist(); }catch(e){} }); }catch(e){ o.innerHTML='<span style="color:#f87171">⚠️ erreur</span>'; }
 }
+/* Mémoire de l'espace bug bounty : saisies persistées au fil de l'eau + restaurées au chargement. */
+function bbWireMemory(){
+  try{ var h=document.getElementById('bbHacktivity'); if(h&&!h._bbw){ h._bbw=1; h.addEventListener('input', bbPersistSoon); } }catch(e){}
+  try{ var bi=document.getElementById('bbBrainIn'); if(bi&&!bi._bbw){ bi._bbw=1; bi.addEventListener('input', bbPersistSoon); } }catch(e){}
+  try{ bbRestore(); }catch(e){}
+}
+try{ if(document.getElementById('bbHacktivity')){ bbWireMemory(); } else { document.addEventListener('DOMContentLoaded', bbWireMemory); } }catch(e){}
 /* ===================== AUDIT AUTO (TOUT SITE) ===================== */
 function UNIV(U,T){ return [
  {t:"Empreinte techno (CMS / serveur / langage / WAF)", c:`whatweb -a3 ${U}; echo ---; curl -sSI -A "Mozilla/5.0" ${U}/`, e:"Identifie le socle (WordPress, Joomla, Drupal, Shopify, Laravel…), le serveur et un éventuel WAF. <b>Colle la sortie → Analyser</b> : l'assistant détecte le CMS et débloque la route dédiée."},
