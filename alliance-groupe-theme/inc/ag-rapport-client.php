@@ -574,7 +574,80 @@ add_action( 'rest_api_init', function () {
 			return array( 'ok' => true, 'host' => $host, 'score' => $score, 'critical' => $crit, 'rapport_url' => $rap );
 		},
 	) );
+
+	// 5) CERVEAU IA : raisonne sur les endpoints/JS colles -> cibles prioritaires + comment tester (Claude cote serveur).
+	register_rest_route( 'ag/v1', '/bb-brain', array(
+		'methods'             => 'POST',
+		'permission_callback' => 'ag_rap_rest_authed',
+		'callback'            => 'ag_bb_brain_rest',
+	) );
+	// Enregistrer la clé IA (ADMIN uniquement — jamais via jeton). Stockée côté serveur, l'outil ne la relit pas.
+	register_rest_route( 'ag/v1', '/bb-setkey', array(
+		'methods'             => 'POST',
+		'permission_callback' => function () { return current_user_can( 'manage_options' ); },
+		'callback'            => function ( $req ) {
+			$k = trim( (string) $req->get_param( 'key' ) );
+			if ( '' !== $k && ! defined( 'AG_CLAUDE_KEY' ) ) { update_option( 'ag_claude_key', $k ); }
+			$m = sanitize_text_field( (string) $req->get_param( 'model' ) );
+			if ( '' !== $m ) { update_option( 'ag_claude_model', $m ); }
+			$has = ( defined( 'AG_CLAUDE_KEY' ) && '' !== (string) AG_CLAUDE_KEY ) || '' !== (string) get_option( 'ag_claude_key', '' );
+			return array( 'ok' => true, 'has_key' => $has, 'model' => (string) get_option( 'ag_claude_model', 'claude-opus-5-5' ) );
+		},
+	) );
 } );
+
+if ( ! function_exists( 'ag_bb_brain_rest' ) ) {
+	function ag_bb_brain_rest( $req ) {
+		$key = defined( 'AG_CLAUDE_KEY' ) ? (string) AG_CLAUDE_KEY : (string) get_option( 'ag_claude_key', '' );
+		if ( '' === $key ) {
+			return array( 'ok' => false, 'error' => "Cle API Claude absente. Ajoute-la dans Reglages -> Cerveau IA, ou define('AG_CLAUDE_KEY','sk-ant-...') dans wp-config.php." );
+		}
+		$ctx   = (string) $req->get_param( 'context' );
+		$cible = sanitize_text_field( (string) $req->get_param( 'cible' ) );
+		if ( strlen( $ctx ) < 3 ) { return array( 'ok' => false, 'error' => "Rien a analyser : colle des endpoints, du JS ou une reponse HTTP." ); }
+		if ( strlen( $ctx ) > 60000 ) { $ctx = substr( $ctx, 0, 60000 ); }
+		$model = (string) get_option( 'ag_claude_model', 'claude-opus-5-5' );
+		$sys = "Tu es un chasseur de bug bounty senior qui aide un debutant sur un programme YesWeHack (cible : " . ( $cible ?: 'application web' ) . "). "
+			. "On te donne des endpoints d'API, des bouts de JavaScript ou des reponses HTTP colles par l'utilisateur. "
+			. "Ton role : RAISONNER comme un ingenieur qui cherche les failles que PERSONNE n'a encore trouvees, pas seulement les motifs connus. "
+			. "Failles QUALIFIANTES : IDOR, elevation de privileges, contournement d'auth, logique metier, SQLi, RCE, LFI/RFI/XXE/SSRF, CORS avec impact, CSRF avec impact, open redirect, secrets exposes. "
+			. "NON qualifiant (ignore) : en-tetes manquants, self-XSS, clickjacking, rate-limiting, enumeration d'utilisateurs, SSL/TLS, SPF/DKIM/DMARC, CORS sans impact. "
+			. "Tests autorises : NON destructifs uniquement, pas de scanner automatique, 5 req/s max. "
+			. "Reponds en FRANCAIS, court et actionnable, SANS tiret long. Structure : "
+			. "1) A TESTER EN PRIORITE : 3 a 6 pistes classees, chacune avec POURQUOI (argent, donnees perso, identifiant manipulable, fonction rare) et COMMENT tester concretement (requete a envoyer, quoi observer). "
+			. "2) Pistes de nouveaute : 1 a 3 idees de logique metier ou d'enchainement propres a cette app, qu'un debutant ne verrait pas. "
+			. "3) Ignore : une ligne. "
+			. "Cite les vrais chemins fournis. Si rien d'exploitable n'apparait, dis-le franchement et propose quoi collecter ensuite.";
+		$body = array(
+			'model'      => $model,
+			'max_tokens' => 2000,
+			'system'     => $sys,
+			'messages'   => array( array( 'role' => 'user', 'content' => "Voici ce que j'ai recupere sur la cible. Dis-moi quoi tester en priorite et comment :\n\n" . $ctx ) ),
+		);
+		$resp = wp_remote_post( 'https://api.anthropic.com/v1/messages', array(
+			'timeout' => 60,
+			'headers' => array(
+				'x-api-key'         => $key,
+				'anthropic-version' => '2023-06-01',
+				'content-type'      => 'application/json',
+			),
+			'body'    => wp_json_encode( $body ),
+		) );
+		if ( is_wp_error( $resp ) ) { return array( 'ok' => false, 'error' => 'Appel IA echoue : ' . $resp->get_error_message() ); }
+		$code = (int) wp_remote_retrieve_response_code( $resp );
+		$json = json_decode( (string) wp_remote_retrieve_body( $resp ), true );
+		if ( 200 !== $code ) {
+			$msg = ( is_array( $json ) && isset( $json['error']['message'] ) ) ? $json['error']['message'] : ( 'HTTP ' . $code );
+			return array( 'ok' => false, 'error' => 'IA : ' . $msg );
+		}
+		$out = '';
+		if ( is_array( $json ) && ! empty( $json['content'] ) ) {
+			foreach ( $json['content'] as $blk ) { if ( ( $blk['type'] ?? '' ) === 'text' ) { $out .= (string) ( $blk['text'] ?? '' ); } }
+		}
+		if ( '' === trim( $out ) ) { return array( 'ok' => false, 'error' => 'IA : reponse vide.' ); }
+		return array( 'ok' => true, 'text' => $out, 'model' => $model );
+	}
+}
 
 /* ===================== Auto-déblocage du certificat au paiement PayPal ===================== */
 add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn, $type = '', $resource = array() ) {
@@ -628,6 +701,8 @@ if ( ! function_exists( 'ag_rap_ajax_proxy' ) ) {
 			'ag_rap_send'       => array( 'POST', '/ag/v1/rapport-send' ),
 			'ag_rap_finddrop'   => array( 'POST', '/ag/v1/find-drop' ),
 			'ag_rap_sesssave'   => array( 'POST', '/ag/v1/session-save' ),
+			'ag_bb_brain'       => array( 'POST', '/ag/v1/bb-brain' ),
+			'ag_bb_setkey'      => array( 'POST', '/ag/v1/bb-setkey' ),
 		);
 		$a = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : '';
 		if ( ! isset( $map[ $a ] ) ) { wp_send_json( array( 'ok' => false, 'error' => 'action inconnue' ), 400 ); }
@@ -643,6 +718,8 @@ if ( ! function_exists( 'ag_rap_ajax_proxy' ) ) {
 	add_action( 'wp_ajax_ag_rap_send', 'ag_rap_ajax_proxy' );
 	add_action( 'wp_ajax_ag_rap_finddrop', 'ag_rap_ajax_proxy' );
 	add_action( 'wp_ajax_ag_rap_sesssave', 'ag_rap_ajax_proxy' );
+	add_action( 'wp_ajax_ag_bb_brain', 'ag_rap_ajax_proxy' );
+	add_action( 'wp_ajax_ag_bb_setkey', 'ag_rap_ajax_proxy' );
 }
 
 /* ===================== Failles riches PAR SITE (tous outils) — source unique du rapport ===================== */

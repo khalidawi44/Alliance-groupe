@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18c</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18c</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18d</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18d</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -89,6 +89,16 @@
         <button class="go" style="background:#166534" onclick="bbGapAnalyze()">🔎 Trouver les manques (mes cibles)</button>
       </div>
       <div id="bbGapOut" class="exp" style="margin-top:8px"></div>
+    </div>
+    <div style="margin-top:12px;border-top:1px solid #2a2f3a;padding-top:10px">
+      <label style="display:block;font-weight:700;margin-bottom:4px">🧠 Cerveau IA — que tester en priorité ?</label>
+      <p class="exp" style="margin:0 0 6px">Colle des <b>endpoints d'API</b>, du <b>JavaScript</b> ou une <b>réponse HTTP</b>. L'IA (Claude, via ta clé) raisonne comme un ingénieur et te dit <b>quoi tester en premier et comment</b>, en cherchant les failles que personne n'a vues. La clé reste <b>sur le serveur</b> (jamais dans le navigateur).</p>
+      <textarea id="bbBrainIn" placeholder="Colle ici les endpoints / le JS / une réponse HTTP à analyser…"></textarea>
+      <div class="row" style="margin-top:6px">
+        <button class="go" style="background:#4338ca" onclick="bbBrain()">🧠 Analyser (IA)</button>
+        <button class="go" style="background:#22304a" onclick="bbSetKeyPrompt()">🔑 Ma clé IA</button>
+      </div>
+      <div id="bbBrainOut" class="exp" style="margin-top:8px;white-space:pre-wrap"></div>
     </div>
   </div>
 
@@ -638,6 +648,29 @@ function bbColorRoute(){
       hh.appendChild(b); break;
     } }
   });
+}
+/* ===== CERVEAU IA : raisonne sur les endpoints/JS/réponses → cibles à tester (Claude côté serveur, via la clé de Fabrice). ===== */
+function bbSetKeyPrompt(){
+  var o=document.getElementById('bbBrainOut');
+  var k=prompt('Colle ta clé API Claude (sk-ant-…).\nElle est stockée côté serveur (WordPress), jamais dans le navigateur. Tu dois être connecté en admin WordPress dans cet onglet.');
+  if(k===null) return; k=(''+k).trim(); if(!k){ return; }
+  if(o) o.innerHTML='🔑 Enregistrement…';
+  try{ agApi('ag_bb_setkey','/ag/v1/bb-setkey','POST',{key:k}).then(function(j){
+    if(!o) return;
+    if(j&&j.ok&&j.has_key){ o.innerHTML='<span style="color:#22c55e">🔑 Clé enregistrée (modèle '+esc(j.model||'')+'). Lance « 🧠 Analyser (IA) ».</span>'; }
+    else { o.innerHTML='<span style="color:#f87171">⚠️ '+esc((j&&j.error)||'échec : connecte-toi en admin WordPress dans cet onglet')+'</span>'; }
+  }).catch(function(){ if(o) o.innerHTML='<span style="color:#f87171">⚠️ Impossible d\'enregistrer : connecte-toi en admin WordPress dans cet onglet.</span>'; }); }catch(e){}
+}
+function bbBrain(){
+  var o=document.getElementById('bbBrainOut'); if(!o) return;
+  var ctx=(document.getElementById('bbBrainIn').value||'').trim();
+  if(!ctx){ o.textContent='Colle d\'abord des endpoints, du JS ou une réponse HTTP à analyser.'; return; }
+  o.innerHTML='🧠 L\'IA réfléchit… (quelques secondes, ne ferme pas)';
+  var cible=(window.AGT&&AGT.T)||(document.getElementById('cible')&&document.getElementById('cible').value)||'';
+  try{ agApi('ag_bb_brain','/ag/v1/bb-brain','POST',{context:ctx.slice(0,60000), cible:cible}).then(function(j){
+    if(j&&j.ok&&j.text){ o.innerHTML='<div class="verdict ok" style="white-space:pre-wrap">'+esc(j.text)+'</div><div class="exp" style="margin-top:4px;opacity:.6">modèle : '+esc(j.model||'')+'</div>'; }
+    else { o.innerHTML='<span style="color:#f87171">⚠️ '+esc((j&&j.error)||'échec')+'</span><br><span class="exp">Si c\'est la clé : clique « 🔑 Ma clé IA » (connecté en admin WordPress).</span>'; }
+  }).catch(function(){ o.innerHTML='<span style="color:#f87171">⚠️ Appel IA impossible. Connecte-toi en admin WordPress dans cet onglet, et enregistre ta clé (🔑 Ma clé IA).</span>'; }); }catch(e){ o.innerHTML='<span style="color:#f87171">⚠️ erreur</span>'; }
 }
 /* ===================== AUDIT AUTO (TOUT SITE) ===================== */
 function UNIV(U,T){ return [
