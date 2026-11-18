@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18b</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18b</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18c</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18c</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -97,6 +97,7 @@
       <div><label>Cible (domaine, IP ou URL)</label><input id="cible" placeholder="exemple.fr  ou  10.10.10.5" autocomplete="off"></div>
       <div><label>Paramètre à tester (optionnel)</label><input id="param" placeholder="id, page, file, q…" autocomplete="off"></div>
     </div>
+    <div id="agGenericTools">
     <label>Type de défi / faille (choisis un ou plusieurs)
       <span style="float:right;font-weight:700">
         <a href="#" id="selall" onclick="return toggleAll()" style="color:var(--or);text-decoration:none;margin-left:12px">✓ Tout sélectionner</a>
@@ -111,6 +112,8 @@
     </div>
     <a href="#" id="ag-serverauto" onclick="openServerAuto();return false;" style="display:block;text-align:center;text-decoration:none;margin-top:8px;padding:12px;border-radius:10px;font-weight:700;color:#031;background:linear-gradient(135deg,#34d399,#10b981)">🔍 Audit AUTO + devis (serveur — comme l'app, 1 clic)</a>
     <p class="sub" style="margin:6px 2px 0;font-size:12px;color:#9aa0b0">Les 3 boutons génèrent la <b>liste des commandes à exécuter toi-même</b> (mode manuel). Le bouton vert ⬆️ ouvre l'<b>audit 100 % automatique côté serveur</b> (en-têtes, versions, xmlrpc, RGPD, SEO → <b>findings + devis</b>) — le même que l'app, sans rien faire. (Un navigateur ne peut pas scanner un site tiers lui-même : l'auto passe par le serveur.)</p>
+    </div>
+    <div id="agBBOnly" style="display:none;margin-top:4px" class="verdict ok">🎯 <b>Mode bug bounty actif</b> — les outils « site / WordPress / scanner » sont masqués (interdits sur un programme). Génère ta route avec <b>« 🎯 Route Bug Bounty (app / API) »</b> ci-dessus.</div>
   </div>
 
   <div class="panel" id="jobsPanel">
@@ -437,12 +440,16 @@ function loadScope(silent){
 	if(s.non_qualifying&&s.non_qualifying.length) L.push('<b>Non-qualifying (sautés) :</b> '+esc(s.non_qualifying.join(', ')));
 	if(s.rate_limit_rps) L.push('<b>Débit max :</b> '+esc(''+s.rate_limit_rps)+' req/s (throttle auto)');
 	document.getElementById('scopeSummary').innerHTML=L.join('<br>')+'<br><span style="color:#9aa0b0">L\'assistant refusera les cibles hors scope et sautera les tests non-qualifying. Aide, pas garantie : reste responsable du respect du mandat.</span>';
-	if(!silent) alert('Scope chargé. Mode encadré actif pour « '+(s.programme||'ce programme')+' ».');
+	// MODE BUG BOUNTY : on masque les outils « site/WordPress/scanner » (interdits sur un programme) pour ne laisser que la Route Bug Bounty.
+	try{ var gt=document.getElementById('agGenericTools'); if(gt) gt.style.display='none'; var bo=document.getElementById('agBBOnly'); if(bo) bo.style.display='block'; }catch(e){}
+	if(!silent) alert('Scope chargé. Mode bug bounty actif pour « '+(s.programme||'ce programme')+' » — outils scanner masqués, utilise « 🎯 Route Bug Bounty ».');
 }
 function clearScope(){
 	SCOPE=null; try{ localStorage.removeItem('ag_scope'); }catch(e){}
 	document.getElementById('scopeSummary').innerHTML='';
 	var b=document.getElementById('scopeBadge'); b.textContent='aucun scope chargé'; b.style.color='#9aa0b0';
+	// On réaffiche les outils génériques (hors bug bounty).
+	try{ var gt=document.getElementById('agGenericTools'); if(gt) gt.style.display=''; var bo=document.getElementById('agBBOnly'); if(bo) bo.style.display='none'; }catch(e){}
 }
 
 function gen(){
