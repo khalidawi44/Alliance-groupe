@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18e</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18e</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18f</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18f</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -694,6 +694,23 @@ function bbBrain(){
     else { o.innerHTML='<span style="color:#f87171">⚠️ '+esc((j&&j.error)||'échec')+'</span><br><span class="exp">Si c\'est la clé : clique « 🔑 Ma clé IA » (connecté en admin WordPress).</span>'; }
     try{ bbPersist(); }catch(e){}
   }).catch(function(){ o.innerHTML='<span style="color:#f87171">⚠️ Appel IA impossible. Connecte-toi en admin WordPress dans cet onglet, et enregistre ta clé (🔑 Ma clé IA).</span>'; try{ bbPersist(); }catch(e){} }); }catch(e){ o.innerHTML='<span style="color:#f87171">⚠️ erreur</span>'; }
+}
+/* CERVEAU IA EN LIGNE : prend le relais SOUS une étape quand aucune faille connue n'est détectée.
+   Le résultat est injecté dans le verdict de l'étape → persisté et restauré au refresh comme le reste. */
+function bbBrainInline(id, context){
+  try{
+    var v=document.getElementById('verd_'+id); if(!v) return;
+    var box=document.getElementById('bi_'+id);
+    if(!box){ box=document.createElement('div'); box.id='bi_'+id; box.style.cssText='margin-top:8px;border-left:3px solid #4338ca;padding:8px 10px;border-radius:6px;background:#1b1f3a'; v.appendChild(box); }
+    box.innerHTML='🧠 <b>L\'IA cherche une piste sous cette étape…</b> (quelques secondes)';
+    var cible=(window.AGT&&AGT.T)||'';
+    agApi('ag_bb_brain','/ag/v1/bb-brain','POST',{context:(''+context).slice(0,60000), cible:cible}).then(function(j){
+      if(j&&j.ok&&j.text){ box.innerHTML='🧠 <b>Piste IA (que faire ensuite) :</b><div style="white-space:pre-wrap;margin-top:4px">'+esc(j.text)+'</div>'; }
+      else if(j&&/cl[eé] api/i.test((j.error||''))){ box.innerHTML='🧠 <b>Cerveau IA prêt</b> — configure ta clé <b>une seule fois</b> : clique « 🔑 Ma clé IA » (en haut, connecté admin WordPress). Ensuite l\'IA s\'ouvrira ici automatiquement.'; }
+      else { box.innerHTML='🧠 IA indisponible : '+esc((j&&j.error)||'échec')+'.'; }
+      try{ persistState(); }catch(e){}
+    }).catch(function(){ box.innerHTML='🧠 IA indisponible (connecte-toi en admin WordPress et pose ta clé via « 🔑 Ma clé IA »).'; try{ persistState(); }catch(e){} });
+  }catch(e){}
 }
 /* Mémoire de l'espace bug bounty : saisies persistées au fil de l'eau + restaurées au chargement. */
 function bbWireMemory(){
@@ -1349,10 +1366,19 @@ function analyzeStep(id){
   v.innerHTML=h;
   if(r.unlock) showExtract(r.unlock);
   if(r.report) applyToReport(r.report, txt);
+  var _nf0=0; try{ _nf0=(window.FINDINGS||[]).length; }catch(e){}
   try{ scanExtra(txt); }catch(e){}
   updateProgress();
   try{ if(txt && txt.trim()){ var _st=box&&box.closest?box.closest('.step'):null; if(_st) _st.classList.add('ag-done'); } }catch(e){}
   try{ persistState(); }catch(e){}
+  // MODE BUG BOUNTY : aucune faille CONNUE détectée → le cerveau IA prend le relais SOUS l'étape (quoi faire ensuite).
+  try{
+    if(window.SCOPE && !r.report && (window.FINDINGS||[]).length===_nf0 && txt && txt.trim().length>20){
+      var _stp=box&&box.closest?box.closest('.step'):null;
+      var _cmd=''; try{ var _c=_stp&&_stp.querySelector('code'); _cmd=_c?_c.textContent:''; }catch(e){}
+      bbBrainInline(id, 'Commande exécutée :\n'+_cmd+'\n\nSortie obtenue :\n'+txt);
+    }
+  }catch(e){}
   if(CAMPAIGN) setTimeout(nudgeNext, 120);
 }
 function applyToReport(rep, txt){
