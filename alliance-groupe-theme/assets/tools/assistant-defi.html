@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18a</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18a</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-18b</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-18b</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -570,6 +570,7 @@ function genBugBounty(){
   fillSkeleton(true);
   document.getElementById('out').classList.remove('hidden');
   updateProgress();
+  try{ bbColorRoute(); }catch(e){} // colore les étapes selon l'analyse des manques, si déjà faite
   document.getElementById('out').scrollIntoView({behavior:'smooth'});
 }
 /* ===== ANALYSE DES MANQUES : range les rapports déjà trouvés (Hacktivity) par type
@@ -598,13 +599,38 @@ function bbGapAnalyze(){
   var counts={}; TYPES.forEach(function(t){counts[t.k]=0;});
   lines.forEach(function(l){ TYPES.forEach(function(t){ if(t.re.test(l)) counts[t.k]++; }); });
   var zero=[],few=[],many=[];
-  TYPES.forEach(function(t){ var c=counts[t.k]; if(c===0) zero.push(t.k); else if(c<=2) few.push(t.k+' ('+c+')'); else many.push(t.k+' ('+c+')'); });
+  window.__AG_GAP_STATUS={};
+  TYPES.forEach(function(t){ var c=counts[t.k]; window.__AG_GAP_STATUS[t.k]=(c===0?'green':(c<=2?'yellow':'red')); if(c===0) zero.push(t.k); else if(c<=2) few.push(t.k+' ('+c+')'); else many.push(t.k+' ('+c+')'); });
   var h='<div class="verdict ok" style="margin:6px 0"><b>'+lines.length+' rapport(s) analysé(s).</b></div>';
   h+='<div style="margin:6px 0"><b>🟢 PRIORITÉ — personne n\'a signalé ça (zéro doublon) :</b><br>'+(zero.length?esc(zero.join('  ·  ')):'— tous les types qualifiants ont déjà été touchés, vise les fonctionnalités récentes')+'</div>';
   if(few.length) h+='<div style="margin:6px 0"><b>🟡 Peu exploré (encore de la place) :</b><br>'+esc(few.join('  ·  '))+'</div>';
   if(many.length) h+='<div style="margin:6px 0;opacity:.7"><b>🔴 Saturé (déjà beaucoup trouvé → risque de doublon, évite) :</b><br>'+esc(many.join('  ·  '))+'</div>';
-  h+='<div class="exp" style="margin-top:8px">➡️ Concentre tes crédits sur le <b>🟢 vert</b>, de préférence sur des <b>fonctionnalités récentes ou peu visibles</b>. Les titres Hacktivity sont souvent masqués : c\'est une <b>orientation</b>, pas une garantie zéro doublon.</div>';
+  h+='<div class="exp" style="margin-top:8px">➡️ Concentre tes crédits sur le <b>🟢 vert</b>, de préférence sur des <b>fonctionnalités récentes ou peu visibles</b>. Les titres Hacktivity sont souvent masqués : c\'est une <b>orientation</b>, pas une garantie zéro doublon. <b>Les étapes de la route sont maintenant colorées</b> selon ces manques (🟢 vise / 🔴 évite) — régénère la route si besoin.</div>';
   out.innerHTML=h;
+  try{ bbColorRoute(); }catch(e){}
+}
+/* Colore les étapes de la route Bug Bounty selon l'analyse des manques (🟢 libre = vise / 🔴 saturé = évite). */
+function bbColorRoute(){
+  var st=window.__AG_GAP_STATUS; if(!st) return;
+  var map=[
+    {re:/CORS/i, key:'CORS (avec impact)'},
+    {re:/redirection ouverte|open redirect/i, key:'Redirection ouverte'},
+    {re:/IDOR/i, key:'IDOR / accès objet non autorisé'},
+    {re:/Auth|JWT/i, key:'Contournement d\'authentification'},
+    {re:/SSRF/i, key:'SSRF'}
+  ];
+  [].forEach.call(document.querySelectorAll('#steps .step'),function(stp){
+    var hh=stp.querySelector('h3'); if(!hh) return;
+    var old=hh.querySelector('.ag-gap'); if(old) old.remove();
+    var t=hh.textContent;
+    for(var i=0;i<map.length;i++){ if(map[i].re.test(t)){
+      var s=st[map[i].key]; if(!s) break;
+      var lbl=(s==='green'?'🟢 LIBRE — vise ça':(s==='red'?'🔴 SATURÉ — évite (doublon probable)':'🟡 peu exploré'));
+      var col=(s==='green'?'#16a34a':(s==='red'?'#dc2626':'#d97706'));
+      var b=document.createElement('span'); b.className='ag-gap'; b.style.cssText='margin-left:8px;font-size:11px;font-weight:700;color:'+col; b.textContent=lbl;
+      hh.appendChild(b); break;
+    } }
+  });
 }
 /* ===================== AUDIT AUTO (TOUT SITE) ===================== */
 function UNIV(U,T){ return [
