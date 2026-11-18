@@ -835,7 +835,7 @@ if ( ! function_exists( 'ag_prospect_secteur_regule' ) ) {
 			return false;
 		};
 		$map = (array) apply_filters( 'ag_prospect_secteurs_regules', array(
-			'sante'      => array( 'dentiste', 'dentaire', 'kiné', 'kine', 'ostéo', 'osteo', 'médecin', 'medecin', 'médical', 'medical', 'paramédical', 'paramedical', 'infirmier', 'infirmière', 'infirmiere', 'pharmac', 'opticien', 'podologue', 'podo', 'orthop', 'psycho', 'laboratoire', 'labo', 'clinique', 'cabinet médical', 'cabinet medical', 'radiolog', 'vétérin', 'veterin', 'sage-femme', 'sage femme', 'ophtalmo', 'dermatolog' ),
+			'sante'      => array( 'dentiste', 'dentaire', 'kiné', 'kine', 'ostéo', 'osteo', 'médecin', 'medecin', 'médical', 'medical', 'paramédical', 'paramedical', 'infirmier', 'infirmière', 'infirmiere', 'pharmac', 'opticien', 'podologue', 'podo', 'orthop', 'psycho', 'laboratoire', 'labo', 'clinique', 'cabinet médical', 'cabinet medical', 'radiolog', 'physioth', 'orthodon', 'vétérin', 'veterin', 'sage-femme', 'sage femme', 'ophtalmo', 'dermatolog' ),
 			'juridique'  => array( 'avocat', 'notaire', 'huissier', 'juriste', 'commissaire de justice' ),
 			'finance'    => array( 'assurance', 'courtier', 'mutuelle', 'comptable', 'expert-comptable', 'expert comptable', 'banque', 'gestion de patrimoine', 'crédit', 'credit', 'fintech' ),
 			'immobilier' => array( 'agence immobil', 'immobilier', 'immobilière', 'immobiliere', 'syndic' ),
@@ -2346,8 +2346,10 @@ add_action( 'ag_relance_cron', function () {
 } );
 if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 	function ag_run_auto_prospection() {
-		$searches = (array) get_option( 'ag_auto_searches', array() );
 		if ( '' === ag_places_key() ) return; // sans clé Places, rien à faire
+		// Banque de cibles changée (filon) → on remplace une fois l'ancienne.
+		if ( function_exists( 'ag_cm_bank_migrer' ) ) { ag_cm_bank_migrer(); }
+		$searches = (array) get_option( 'ag_auto_searches', array() );
 		// CHASSE 100% AUTONOME : si aucune cible n'a été définie à la main, le
 		// robot se dote LUI-MÊME d'une banque de cibles (secteur × ville) via le
 		// Community Manager. Fini la liste vide = fini le « 0 prospect ».

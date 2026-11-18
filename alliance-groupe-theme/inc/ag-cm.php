@@ -30,16 +30,54 @@ if ( ! function_exists( 'ag_cm_autofeed' ) ) {
 }
 
 /* ── Banque de cibles (secteur × ville) pour relancer la chasse ──────── */
+if ( ! function_exists( 'ag_cm_bank_version' ) ) {
+	/* Version de la banque de cibles : sert à remplacer UNE FOIS, sur un site
+	   déjà amorcé, l'ancienne banque par la nouvelle (ag_cm_bank_migrer). */
+	function ag_cm_bank_version() { return 2; }
+}
+if ( ! function_exists( 'ag_cm_bank_migrer' ) ) {
+	/**
+	 * La liste ag_auto_searches n'est amorcée depuis la banque QUE lorsqu'elle est
+	 * vide : un site déjà amorcé gardait donc l'ancienne banque (commerce/tourisme)
+	 * pour toujours. Ici, une seule fois par version : on retire les cibles de
+	 * l'ancienne banque automatique, on GARDE celles ajoutées à la main, et on met
+	 * la nouvelle banque en tête. Renvoie le nombre de cibles, 0 si rien à faire.
+	 */
+	function ag_cm_bank_migrer() {
+		if ( (int) get_option( 'ag_cm_bank_v', 1 ) >= ag_cm_bank_version() ) { return 0; }
+		update_option( 'ag_cm_bank_v', ag_cm_bank_version(), false );
+		$anciens = array( 'prêt-à-porter', 'bijouterie', 'caviste', 'magasin de meubles', 'épicerie fine',
+			'concept store', 'agence immobilière', 'hôtel', 'restaurant', 'camping', 'centre dentaire', 'clinique vétérinaire' );
+		$bank = ag_cm_bank();
+		$vu   = array();
+		foreach ( $bank as $b ) { $vu[ strtolower( $b['q'] . '|' . $b['city'] ) ] = 1; }
+		$manuel = array();
+		foreach ( (array) get_option( 'ag_auto_searches', array() ) as $s ) {
+			$q = (string) ( $s['q'] ?? '' ); $c = (string) ( $s['city'] ?? '' );
+			if ( in_array( $q, $anciens, true ) || isset( $vu[ strtolower( $q . '|' . $c ) ] ) ) { continue; }
+			$manuel[] = array( 'q' => $q, 'city' => $c );
+		}
+		$liste = array_merge( $bank, $manuel );
+		update_option( 'ag_auto_searches', $liste, false );
+		update_option( 'ag_auto_search_i', 0, false );
+		update_option( 'ag_cm_bank_i', 0, false );
+		if ( function_exists( 'ag_activity_log' ) ) { ag_activity_log( '🎯 Chasse réalignée sur le filon sécurité/conformité : ' . count( $liste ) . ' cibles (santé en tête).' ); }
+		return count( $liste );
+	}
+}
 if ( ! function_exists( 'ag_cm_bank' ) ) {
 	function ag_cm_bank() {
-		/* Secteurs recentrés sur LE FILON du canal email (voir docs/FILON.md) :
-		   des pros qui ONT un site transactionnel/vitrine à forte valeur (donc
-		   joignables par contact@ et avec un vrai budget web) plutôt que des
-		   micro-artisans souvent sans site. Priorité : commerce/e-commerce,
-		   immobilier, hôtellerie-tourisme, santé de groupe. */
-		$secteurs = array( 'prêt-à-porter', 'bijouterie', 'caviste', 'magasin de meubles',
-			'épicerie fine', 'concept store', 'agence immobilière', 'hôtel',
-			'restaurant', 'camping', 'centre dentaire', 'clinique vétérinaire' );
+		/* Secteurs alignés sur LE FILON sécurité/conformité (docs/FILON.md, pivot
+		   29/10) : segments dans l'ordre de priorité — santé #1 (données patients,
+		   HDS), puis juridique/finance/immobilier (RGPD art. 32), puis un appoint
+		   e-commerce (EAA). Ce sont les métiers que le Scoreur fait remonter
+		   (ag_prospect_secteur_regule) : chasser autre chose dépense le quota
+		   Places pour des fiches qu'Hugo n'atteint jamais en mode économe.
+		   Changer cette liste → incrémenter ag_cm_bank_version(). */
+		$secteurs = array( 'dentiste', 'kinésithérapeute', 'ostéopathe', 'cabinet médical',
+			'laboratoire d\'analyses médicales', 'opticien', 'clinique vétérinaire',
+			'avocat', 'courtier en assurance', 'agence immobilière',
+			'bijouterie', 'prêt-à-porter' );
 		$villes = array( 'Nantes', 'Saint-Nazaire', 'Rennes', 'Angers', 'Vannes',
 			'La Roche-sur-Yon', 'Cholet', 'Saint-Herblain', 'Rezé', 'Lorient' );
 		$bank = array();
