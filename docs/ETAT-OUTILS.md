@@ -15,6 +15,7 @@
 - **Flux produits** : Merchant (`/?ag_merchant_feed=1`, 6 templates) + **Meta catalog** (`/?ag_meta_feed=1`, actif).
 - **SEO technique** : `/sitemap.xml` 200, `/robots.txt` 200.
 - **Pilote auto** : `/wp-json/ag/v1/run` répond **403** (jeton exigé) → route vivante, cron-job.org /15 min.
+  - ⚠️ **Sonde 19/11/2026 : 404** — `functions.php` régressé le 02/11 (chargeurs perdus : pilote, démarchage, relève, tunnel, Meta Pixel…). Correctif en PR sur `claude/gallant-turing-sq0fhv`, à fusionner + SYNC. Re-sonder après (403 attendu).
 - **NAP** présent (44200, `contact@alliancegroupe-inc.com`).
 
 ## État par outil (option/constante · rôle · comment vérifier · constaté 23/10)
