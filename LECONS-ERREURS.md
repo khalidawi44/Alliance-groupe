@@ -51,3 +51,10 @@ LEÇON : pousser la branche ne suffit pas. Vérifier la branche lue par le site 
 ERREUR 6 : quiz de connaissances, 2 réponses fausses (confusion « collabore avec » / « fait partie de l'équipe »).
 RÉSOLU PAR : vérifier à la source avant de répondre, ne pas répondre de mémoire sur un point précis.
 LEÇON : sur une question factuelle, puiser dans la source, pas dans l'impression.
+
+## 2026-11-19 — functions.php écrasé par une vieille version : machine commerciale éteinte 17 jours, en silence
+
+ERREUR 7 : `/wp-json/ag/v1/run` répondait 404 en ligne ; plus d'envoi, de chasse, de relève, d'analyste ni de Meta Pixel depuis ~le 02/11.
+CAUSE : en reportant des fichiers entre deux histoires git non liées (ERREUR 5), un `functions.php` ANCIEN a remplacé le courant (commit `22081f4`) : 33 chargeurs `inc/` + la boucle de l'agent commercial ont disparu. Les fichiers `inc/` existaient toujours, donc rien ne « manquait » à l'œil ; le scoreur a même été réglé le 15/11 alors qu'il n'était plus chargé.
+RÉSOLU PAR : comparaison de `functions.php` avant/après le commit, réinsertion des seuls blocs supprimés (ajouts purs), `php -l`, contrôle des doublons de fonctions.
+LEÇON : (1) après tout report de fichiers vers `main`, regarder `git diff --stat` de `functions.php` et `header.php` : une grosse SUPPRESSION non voulue = régression. (2) Sonder `/wp-json/ag/v1/run` (403 attendu) à chaque routine AVANT d'analyser les ventes : zéro résultat peut vouloir dire « rien ne tourne », pas « le filon est mauvais ». (3) Un module réglé n'est pas un module chargé : vérifier son `require` dans `functions.php`.

@@ -79,16 +79,145 @@ if ( file_exists( $ag_github_sync_file ) ) {
     require_once $ag_github_sync_file;
 }
 
+// ── Plan du site : page listant toutes les pages + articles (lien en footer).
+$ag_plan_file = get_stylesheet_directory() . '/inc/ag-plan-du-site.php';
+if ( file_exists( $ag_plan_file ) ) {
+    require_once $ag_plan_file;
+}
+
+// ── Redirections 301 des anciennes pages (obsolètes) vers une page vivante.
+$ag_redir_file = get_stylesheet_directory() . '/inc/ag-redirections.php';
+if ( file_exists( $ag_redir_file ) ) {
+    require_once $ag_redir_file;
+}
+
+// ── SEO : noindex des pages utilitaires/internes + archives fines (nettoyage de l'index).
+$ag_noindex_file = get_stylesheet_directory() . '/inc/ag-seo-noindex.php';
+if ( file_exists( $ag_noindex_file ) ) {
+    require_once $ag_noindex_file;
+}
+
 // ── 1c3. Données détaillées des 6 services (consommées par template-parts/service-detail.php)
 $ag_services_data_file = get_stylesheet_directory() . '/inc/services-data.php';
 if ( file_exists( $ag_services_data_file ) ) {
     require_once $ag_services_data_file;
 }
 
+// ── 1c3-bis. Offres Sites Express : SOURCE DE VERITE unique des 3 packs
+//    (prix, contenu, delais). Toute page qui affiche un pack passe par
+//    ag_sites_express_packs() : un prix ne doit exister qu'a UN endroit.
+$ag_offres_file = get_stylesheet_directory() . '/inc/ag-offres.php';
+if ( file_exists( $ag_offres_file ) ) {
+    require_once $ag_offres_file;
+}
+
 // ── 1c4. SEO meta (titres + descriptions tunes par mot-cle, LocalBusiness bureaux, Offers templates)
 $ag_seo_meta_file = get_stylesheet_directory() . '/inc/ag-seo-meta.php';
 if ( file_exists( $ag_seo_meta_file ) ) {
     require_once $ag_seo_meta_file;
+}
+
+// ── 1c4a-bis. SEO local : NAP centralisé + schema LocalBusiness (accueil/contact) + checklist Fiche Google
+$ag_seo_localbiz_file = get_stylesheet_directory() . '/inc/ag-seo-localbiz.php';
+if ( file_exists( $ag_seo_localbiz_file ) ) {
+    require_once $ag_seo_localbiz_file;
+}
+
+// ── 1c4a-ter. Réalisations (portfolio éditable) : « Nos projets récents » + liens fiche Google
+$ag_portfolio_file = get_stylesheet_directory() . '/inc/ag-portfolio.php';
+if ( file_exists( $ag_portfolio_file ) ) {
+    require_once $ag_portfolio_file;
+}
+
+// ── 1c4a-quater. Tunnels sans appel : audit payant (mandat signé) + RDV site personnalisé (Google Agenda)
+$ag_mandat_file = get_stylesheet_directory() . '/inc/ag-mandat.php';
+if ( file_exists( $ag_mandat_file ) ) {
+    require_once $ag_mandat_file;
+}
+
+// ── 1c4a-quinquies. Cartographie « en chaîne » des agences web (agence → ses créations, classées pire→meilleur)
+$ag_agences_file = get_stylesheet_directory() . '/inc/ag-agences.php';
+if ( file_exists( $ag_agences_file ) ) {
+    require_once $ag_agences_file;
+}
+
+// ── 1c4a-sexies. Veille « Appels d'offres publics » (BOAMP open data) : leads chauds à budget voté
+$ag_appels_offres_file = get_stylesheet_directory() . '/inc/ag-appels-offres.php';
+if ( file_exists( $ag_appels_offres_file ) ) {
+    require_once $ag_appels_offres_file;
+}
+
+// ── 1c4a-septies. Missions ambassadeurs (« ton BeMyEye ») + Plateformes de missions web
+$ag_missions_file = get_stylesheet_directory() . '/inc/ag-missions.php';
+if ( file_exists( $ag_missions_file ) ) {
+    require_once $ag_missions_file;
+}
+
+// ── 1c4a-octies. Espace Composants (bibliothèque web façon uiverse.io) : configurateur + copie/ZIP + créateurs du mois
+$ag_composants_file = get_stylesheet_directory() . '/inc/ag-composants.php';
+if ( file_exists( $ag_composants_file ) ) {
+    require_once $ag_composants_file;
+}
+
+// ── 1c4a-octies-bis. Marketplace des composants : créateur gratuit/payant, encaissement vendeur, commission plateforme, verrou de téléchargement payant.
+$ag_composants_market_file = get_stylesheet_directory() . '/inc/ag-composants-market.php';
+if ( file_exists( $ag_composants_market_file ) ) {
+    require_once $ag_composants_market_file;
+}
+
+// ── 1c4a-octies-ter. Atelier IA (/atelier) : landing galerie des outils IA + services (vignettes générées par IA).
+$ag_atelier_file = get_stylesheet_directory() . '/inc/ag-atelier.php';
+if ( file_exists( $ag_atelier_file ) ) {
+    require_once $ag_atelier_file;
+}
+
+// ── 1c4a-nonies. Noyau IA partagé (clé ag_ai_key) : réutilisé par les modules « nouveauté » ci-dessous.
+$ag_ia_file = get_stylesheet_directory() . '/inc/ag-ia.php';
+if ( file_exists( $ag_ia_file ) ) {
+    require_once $ag_ia_file;
+}
+
+// ── 1c4a-decies. Journal public « Fait par l'IA » (transparence · sans clé API).
+$ag_journal_ia_file = get_stylesheet_directory() . '/inc/ag-journal-ia.php';
+if ( file_exists( $ag_journal_ia_file ) ) {
+    require_once $ag_journal_ia_file;
+}
+
+// ── 1c4a-undecies. « Vois ton site refait par l'IA en 60 s » (maquette live + lead).
+$ag_refais_file = get_stylesheet_directory() . '/inc/ag-refais-mon-site.php';
+if ( file_exists( $ag_refais_file ) ) {
+    require_once $ag_refais_file;
+}
+
+// ── 1c4a-undecies-bis. Mur d'email (double opt-in) + attribution ambassadeur
+//     sur les maquettes IA. Charge APRES le generateur : il s'y branche.
+$ag_refais_acces_file = get_stylesheet_directory() . '/inc/ag-refais-acces.php';
+if ( file_exists( $ag_refais_acces_file ) ) {
+    require_once $ag_refais_acces_file;
+}
+
+// ── 1c4a-duodecies. Concierge IA (assistant flottant + capture de leads en tool-use).
+$ag_concierge_file = get_stylesheet_directory() . '/inc/ag-concierge.php';
+if ( file_exists( $ag_concierge_file ) ) {
+    require_once $ag_concierge_file;
+}
+
+// ── 1c4a-terdecies. Devis instantané par l'IA (voix ou texte, sortie structurée).
+$ag_devis_file = get_stylesheet_directory() . '/inc/ag-devis-instant.php';
+if ( file_exists( $ag_devis_file ) ) {
+    require_once $ag_devis_file;
+}
+
+// ── 1c4a-quaterdecies. Gardien de nuit (« le site se répare tout seul la nuit »).
+$ag_nuit_file = get_stylesheet_directory() . '/inc/ag-nuit.php';
+if ( file_exists( $ag_nuit_file ) ) {
+    require_once $ag_nuit_file;
+}
+
+// ── 1c4a-quindecies. Suivi comportement visiteurs « venus seuls » (inbound) + page 👣 Visiteurs.
+$ag_visiteurs_file = get_stylesheet_directory() . '/inc/ag-visiteurs.php';
+if ( file_exists( $ag_visiteurs_file ) ) {
+    require_once $ag_visiteurs_file;
 }
 
 // ── 1c4b. SEO pages piliers (création site Nantes + cybersécurité/NIS2) + LocalBusiness/Breadcrumb/Service
@@ -113,6 +242,24 @@ if ( file_exists( $ag_seo_autopub_file ) ) {
 $ag_avis_file = get_stylesheet_directory() . '/inc/ag-avis.php';
 if ( file_exists( $ag_avis_file ) ) {
     require_once $ag_avis_file;
+}
+
+// ── 1c4e-bis. Menage unique : preuves fabriquees dans les articles deja publies
+$ag_menage_file = get_stylesheet_directory() . '/inc/ag-menage-preuves.php';
+if ( file_exists( $ag_menage_file ) ) {
+    require_once $ag_menage_file;
+}
+
+// ── 1c4e-ter. Agent commercial : démarchage autonome, contrat, signature.
+// L'ordre compte : le moteur d'abord, les écrans de pilotage ensuite (ils
+// appellent ag_closer_*() et ag_sign_*() dès le rendu du menu).
+// Tout démarre ÉTEINT : `ag_closer_on` et `ag_sign_contrat_relu` sont à 0 par
+// défaut, donc déployer ce fichier n'envoie rien et n'engage rien.
+foreach ( array( 'ag-smtp.php', 'ag-equipe.php', 'ag-surclassement.php', 'ag-provenance.php', 'ag-enrichir.php', 'ag-closer.php', 'ag-signature.php', 'ag-juriste.php', 'ag-negociateur.php', 'ag-reponses.php', 'ag-boite.php', 'ag-relance-chaud.php', 'ag-captures.php', 'ag-directeur.php', 'ag-commercial-admin.php' ) as $ag_com_f ) {
+    $ag_com_p = get_stylesheet_directory() . '/inc/' . $ag_com_f;
+    if ( file_exists( $ag_com_p ) ) {
+        require_once $ag_com_p;
+    }
 }
 
 // ── 1c4f. Témoignages clients sur le site (formulaire + schema, en attendant la fiche Google)
@@ -185,6 +332,12 @@ if ( file_exists( $ag_candidatures_file ) ) {
 $ag_sms_gateway_file = get_stylesheet_directory() . '/inc/ag-sms-gateway.php';
 if ( file_exists( $ag_sms_gateway_file ) ) {
     require_once $ag_sms_gateway_file;
+}
+
+// ── 1c5b-quater-2. Robot vocal IA : webhook de compte-rendu d'appel → CRM
+$ag_voice_file = get_stylesheet_directory() . '/inc/ag-voice-webhook.php';
+if ( file_exists( $ag_voice_file ) ) {
+    require_once $ag_voice_file;
 }
 
 // ── 1c5b-quinquies. Ma prospection (page front-end simple pour un proche/ambassadeur)
@@ -308,6 +461,18 @@ if ( file_exists( $ag_merchant_feed_file ) ) {
     require_once $ag_merchant_feed_file;
 }
 
+// ── 1c6d-bis. Flux produits Meta (Facebook/Instagram) : /meta-catalog-feed.xml
+$ag_meta_feed_file = get_stylesheet_directory() . '/inc/ag-meta-feed.php';
+if ( file_exists( $ag_meta_feed_file ) ) {
+    require_once $ag_meta_feed_file;
+}
+
+// ── 1c6d-ter. Pixel Meta (Facebook/Instagram) avec Consent Mode RGPD
+$ag_meta_pixel_file = get_stylesheet_directory() . '/inc/ag-meta-pixel.php';
+if ( file_exists( $ag_meta_pixel_file ) ) {
+    require_once $ag_meta_pixel_file;
+}
+
 // ── 1c6e. Google Avis clients (badge + opt-in enquête sur /merci-achat)
 $ag_google_reviews_file = get_stylesheet_directory() . '/inc/ag-google-reviews.php';
 if ( file_exists( $ag_google_reviews_file ) ) {
@@ -336,6 +501,12 @@ add_action( 'wp_footer', function () {
 $ag_prospection_file = get_stylesheet_directory() . '/inc/ag-prospection.php';
 if ( file_exists( $ag_prospection_file ) ) {
     require_once $ag_prospection_file;
+}
+
+// ── Radar réseautage Nantes (soirées / rencontres entrepreneurs) — sous-menu Prospection
+$ag_reseautage_file = get_stylesheet_directory() . '/inc/ag-reseautage.php';
+if ( file_exists( $ag_reseautage_file ) ) {
+    require_once $ag_reseautage_file;
 }
 
 // ── Capture lead « Guide gratuit avocat » (entonnoir freemium .org → site mère)
@@ -397,6 +568,48 @@ add_action( 'wp_footer', function () {
 $ag_espaces_file = get_stylesheet_directory() . '/inc/ag-espaces.php';
 if ( file_exists( $ag_espaces_file ) ) {
     require_once $ag_espaces_file;
+}
+
+// ── 1c12. Pilote automatique : déclencheur externe 24/7 de la chaîne commerciale + diagnostic
+$ag_autopilot_file = get_stylesheet_directory() . '/inc/ag-autopilot.php';
+if ( file_exists( $ag_autopilot_file ) ) {
+    require_once $ag_autopilot_file;
+}
+
+// ── 1c13. Tunnel qui apprend : journal d'événements + analyste automatique + tableau de bord
+$ag_funnel_file = get_stylesheet_directory() . '/inc/ag-funnel.php';
+if ( file_exists( $ag_funnel_file ) ) {
+    require_once $ag_funnel_file;
+}
+
+// ── 1c14. Max l'expérimentateur : A/B autonome de l'objet des mails (auto-promotion du gagnant)
+$ag_ab_file = get_stylesheet_directory() . '/inc/ag-ab.php';
+if ( file_exists( $ag_ab_file ) ) {
+    require_once $ag_ab_file;
+}
+
+// ── 1c15. Le Scoreur : priorise tout seul la file d'Hugo (meilleures cibles d'abord)
+$ag_scoreur_file = get_stylesheet_directory() . '/inc/ag-scoreur.php';
+if ( file_exists( $ag_scoreur_file ) ) {
+    require_once $ag_scoreur_file;
+}
+
+// ── 1c16. Le Gardien de réputation : frein/chauffe automatique du plafond d'Hugo
+$ag_gardien_file = get_stylesheet_directory() . '/inc/ag-gardien.php';
+if ( file_exists( $ag_gardien_file ) ) {
+    require_once $ag_gardien_file;
+}
+
+// ── 1c17. Rapport du soir (20h) : digest quotidien de l'activité des agents
+$ag_rapport_file = get_stylesheet_directory() . '/inc/ag-rapport-soir.php';
+if ( file_exists( $ag_rapport_file ) ) {
+    require_once $ag_rapport_file;
+}
+
+// ── 1c18. Community Manager / Croissance : détecte les blocages et réoriente
+$ag_cm_file = get_stylesheet_directory() . '/inc/ag-cm.php';
+if ( file_exists( $ag_cm_file ) ) {
+    require_once $ag_cm_file;
 }
 
 // ── Musique de fond : DÉSACTIVÉE sur demande user (lecteur retiré du site). ──
@@ -1025,17 +1238,31 @@ add_action( 'wp_head', function () {
     // Organization schema (all pages)
     $org = array(
         '@context' => 'https://schema.org',
-        '@type' => 'Organization',
+        // Double type : Organization + ProfessionalService pour que Google
+        // classe correctement l'entité (services web/cyber) et NE la confonde
+        // PAS avec une compagnie d'assurance homonyme (« Alliance »/« Allianz »).
+        '@type' => array( 'Organization', 'ProfessionalService' ),
         'name' => 'Alliance Groupe',
         'url' => $site_url,
         'logo' => $logo_url,
-        'description' => 'Studio web indépendant à Nantes : audit de sécurité, création de sites et maintenance.',
+        'description' => 'Studio web et cybersécurité indépendant à Nantes : création de sites internet, audit de sécurité et maintenance. Agence web, pas une compagnie d\'assurance.',
+        'slogan' => 'Création de sites internet & cybersécurité à Nantes',
+        // Domaines d'expertise explicites : aide Google à cerner l'activité réelle.
+        'knowsAbout' => array(
+            'Création de site internet',
+            'Agence web',
+            'Cybersécurité',
+            'Audit de sécurité informatique',
+            'Maintenance de site WordPress',
+            'Référencement local',
+        ),
         'telephone' => '+33744829516',
         'email' => 'contact@alliancegroupe-inc.com',
+        // Une seule adresse professionnelle REELLE : Nantes (studio solo).
+        // Naples = les racines de Fabrizio, raconte sur /a-propos, jamais une
+        // adresse. Marrakech n'existe pas : ne JAMAIS le declarer ici.
         'address' => array(
-            array( '@type' => 'PostalAddress', 'addressLocality' => 'Naples', 'addressCountry' => 'IT' ),
             array( '@type' => 'PostalAddress', 'addressLocality' => 'Nantes', 'addressCountry' => 'FR' ),
-            array( '@type' => 'PostalAddress', 'addressLocality' => 'Marrakech', 'addressCountry' => 'MA' ),
         ),
         'sameAs' => array( $site_url ),
         'founder' => array( '@type' => 'Person', 'name' => 'Fabrizio' ),
@@ -1139,10 +1366,11 @@ add_action( 'wp_head', function () {
 
     // LocalBusiness schema (front page — SEO local)
     if ( is_front_page() ) {
+        // Un seul etablissement REEL : Nantes. Declarer une fiche Naples ou
+        // Marrakech a Google serait une fausse implantation (et un risque
+        // direct pour la fiche Google Business).
         $offices = array(
             array( 'Alliance Groupe — Nantes', 'Nantes', 'Pays de la Loire', 'FR', '+33744829516', 47.2173, -1.5534 ),
-            array( 'Alliance Groupe — Naples', 'Naples', 'Campania', 'IT', '+33744829516', 40.8518, 14.2681 ),
-            array( 'Alliance Groupe — Marrakech', 'Marrakech', 'Marrakech-Safi', 'MA', '+33744829516', 31.6295, -8.0088 ),
         );
         foreach ( $offices as $o ) {
             $lb = array(
@@ -1192,6 +1420,20 @@ if ( ! function_exists( 'ag_save_lead' ) ) {
         );
         update_option( 'ag_template_leads', $leads );
 
+        // Route AUSSI le lead dans le CRM Prospection, pour le retrouver au même
+        // endroit que tous les autres (avant, ag_template_leads n'était affiché
+        // nulle part → leads « invisibles » dans l'admin).
+        if ( function_exists( 'ag_prospect_add_record' ) ) {
+            ag_prospect_add_record( array(
+                'name'   => $name,
+                'email'  => $email,
+                'phone'  => $phone,
+                'status' => 'nouveau',
+                'source' => 'template-' . ( $template ? $template : 'metier' ),
+                'notes'  => 'A demandé le template « ' . ( $template ? $template : '?' ) . ' » (téléchargement).',
+            ) );
+        }
+
         wp_mail(
             'contact@alliancegroupe-inc.com',
             'Nouveau lead template : ' . $name,
@@ -1205,6 +1447,27 @@ if ( ! function_exists( 'ag_save_lead' ) ) {
         wp_send_json_success();
     }
 }
+
+// Migration ponctuelle : fait remonter les anciens leads « template » (dont
+// Maurice) dans le CRM Prospection. ag_prospect_add_record déduplique (nom/tél),
+// donc l'import est sûr. Idempotent via le drapeau ag_tpl_leads_migrated_v1.
+add_action( 'init', function () {
+    if ( get_option( 'ag_tpl_leads_migrated_v1' ) ) { return; }
+    if ( function_exists( 'ag_prospect_add_record' ) ) {
+        foreach ( (array) get_option( 'ag_template_leads', array() ) as $l ) {
+            if ( empty( $l['name'] ) ) { continue; }
+            ag_prospect_add_record( array(
+                'name'   => $l['name'],
+                'email'  => isset( $l['email'] ) ? $l['email'] : '',
+                'phone'  => isset( $l['phone'] ) ? $l['phone'] : '',
+                'status' => 'nouveau',
+                'source' => 'template-' . ( ! empty( $l['template'] ) ? $l['template'] : 'metier' ),
+                'notes'  => 'A demandé le template « ' . ( isset( $l['template'] ) ? $l['template'] : '?' ) . ' » (import).',
+            ) );
+        }
+    }
+    update_option( 'ag_tpl_leads_migrated_v1', 1 );
+}, 20 );
 
 // ── 11. Questions Flash submission (post-paiement) ────────────────
 add_action( 'admin_post_nopriv_ag_submit_question', 'ag_submit_question' );
@@ -1543,6 +1806,9 @@ if ( ! function_exists( 'ag_sur_mesure_submit' ) ) {
         $list = (array) get_option( 'ag_sur_mesure_requests', array() );
         $list[] = $req;
         update_option( 'ag_sur_mesure_requests', array_slice( $list, -500 ) );
+
+        // Le plus gros panier entre AUSSI dans le CRM (relance possible) — voir inc/ag-captures.php.
+        do_action( 'ag_sur_mesure_saved', $req );
 
         $body  = "Nouvelle demande de devis SUR-MESURE\n\n";
         $body .= "Nom : {$req['name']}\nEmail : {$req['email']}\nTél : {$req['phone']}\nEntreprise : {$req['business']}\nPays : {$req['pays']}\n\n";
