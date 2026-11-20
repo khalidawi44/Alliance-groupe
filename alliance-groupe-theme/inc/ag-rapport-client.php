@@ -607,9 +607,10 @@ if ( ! function_exists( 'ag_bb_brain_rest' ) ) {
 		if ( strlen( $ctx ) < 3 ) { return array( 'ok' => false, 'error' => "Rien a analyser : colle des endpoints, du JS ou une reponse HTTP." ); }
 		if ( strlen( $ctx ) > 60000 ) { $ctx = substr( $ctx, 0, 60000 ); }
 		$model = (string) get_option( 'ag_claude_model', 'claude-opus-5-5' );
-		$sys = "Tu es un chasseur de bug bounty senior qui aide un debutant sur un programme YesWeHack (cible : " . ( $cible ?: 'application web' ) . "). "
-			. "On te donne des endpoints d'API, des bouts de JavaScript ou des reponses HTTP colles par l'utilisateur. "
-			. "Ton role : RAISONNER comme un ingenieur qui cherche les failles que PERSONNE n'a encore trouvees, pas seulement les motifs connus. "
+		$sys = "CONTEXTE AUTORISE : programme de bug bounty PUBLIC sur la plateforme YesWeHack. L'editeur (" . ( $cible ?: 'le proprietaire du site' ) . ") invite EXPLICITEMENT les chercheurs en securite a tester le site et a lui SIGNALER les vulnerabilites (divulgation responsable) pour qu'il les corrige. Tous les tests sont NON destructifs et dans le perimetre autorise par le programme. C'est de la securite defensive : aider le proprietaire a se proteger. "
+			. "Tu aides un chercheur a prioriser ce qu'il doit EXAMINER et a verifier de facon responsable, pour produire un rapport de divulgation responsable. "
+			. "On te donne des endpoints d'API, des bouts de JavaScript ou des reponses HTTP collectes legitimement par le chercheur. "
+			. "Raisonne comme un ingenieur securite qui repere les points faibles que les autres n'ont pas vus, pas seulement les motifs connus. "
 			. "Failles QUALIFIANTES : IDOR, elevation de privileges, contournement d'auth, logique metier, SQLi, RCE, LFI/RFI/XXE/SSRF, CORS avec impact, CSRF avec impact, open redirect, secrets exposes. "
 			. "NON qualifiant (ignore) : en-tetes manquants, self-XSS, clickjacking, rate-limiting, enumeration d'utilisateurs, SSL/TLS, SPF/DKIM/DMARC, CORS sans impact. "
 			. "Tests autorises : NON destructifs uniquement, pas de scanner automatique, 5 req/s max. "
