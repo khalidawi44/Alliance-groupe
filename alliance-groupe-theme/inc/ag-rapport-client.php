@@ -620,7 +620,7 @@ if ( ! function_exists( 'ag_bb_brain_rest' ) ) {
 			. "Cite les vrais chemins fournis. Si rien d'exploitable n'apparait, dis-le franchement et propose quoi collecter ensuite.";
 		$body = array(
 			'model'      => $model,
-			'max_tokens' => 2000,
+			'max_tokens' => 6000, // large : laisse la place à la réflexion (thinking adaptatif) + la réponse, sinon « réponse vide »
 			'system'     => $sys,
 			'messages'   => array( array( 'role' => 'user', 'content' => "Voici ce que j'ai recupere sur la cible. Dis-moi quoi tester en priorite et comment :\n\n" . $ctx ) ),
 		);
@@ -644,7 +644,12 @@ if ( ! function_exists( 'ag_bb_brain_rest' ) ) {
 		if ( is_array( $json ) && ! empty( $json['content'] ) ) {
 			foreach ( $json['content'] as $blk ) { if ( ( $blk['type'] ?? '' ) === 'text' ) { $out .= (string) ( $blk['text'] ?? '' ); } }
 		}
-		if ( '' === trim( $out ) ) { return array( 'ok' => false, 'error' => 'IA : reponse vide.' ); }
+		if ( '' === trim( $out ) ) {
+			$stop = is_array( $json ) ? (string) ( $json['stop_reason'] ?? '' ) : '';
+			if ( 'refusal' === $stop ) { return array( 'ok' => false, 'error' => "IA : la requete a ete refusee par la securite du modele. Reformule ou colle moins de contenu brut." ); }
+			if ( 'max_tokens' === $stop ) { return array( 'ok' => false, 'error' => "IA : reponse trop longue (coupee). Colle moins de contenu a la fois." ); }
+			return array( 'ok' => false, 'error' => 'IA : reponse vide' . ( $stop ? ' (' . $stop . ')' : '' ) . '.' );
+		}
 		return array( 'ok' => true, 'text' => $out, 'model' => $model );
 	}
 }

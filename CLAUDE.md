@@ -6,6 +6,15 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 
 > 📚 Détail complet (raccourcis, création vidéo, agents, meilleur système par type de site, config, limites) : **`INFRASTRUCTURE.md`**.
 
+## 🔒 RÈGLES FABRICE — NE JAMAIS OUBLIER (même après un résumé de conversation)
+Règles de travail demandées par Fabrice, valables partout, toujours :
+1. **Commandes toujours COMPLÈTES et prêtes à copier.** Jamais de placeholder au milieu d'une commande (ex. `REMPLACE_PAR_...` collé dans l'URL). Si une valeur est inconnue (jeton, endpoint), la mettre en **variable claire tout en haut** (ex. `URL='...'` sur sa propre ligne), pas au milieu, pour que le reste soit copiable tel quel.
+2. **Tout doit persister au refresh (Ctrl+F5).** Chaque saisie et chaque résultat d'un outil doit être mémorisé (localStorage + serveur) et restauré au chargement.
+3. **Les outils doivent être AUTONOMES** : ils analysent, tranchent et guident eux-mêmes ; Fabrice ne doit pas avoir besoin de moi (Claude-chat) pour interpréter une sortie.
+4. **Textes propres** (skill `textes-propres-sans-ia`) : aucun tiret long `—`, aucune formule d'IA, aucune trace de Claude. Vaut pour tout ce qui est écrit POUR Fabrice (outils, site, docs, visuels).
+5. **Déploiement** : pousser sur la branche de travail ET sur `main` (le SYNC du site lit `main`). Toute MAJ d'`assistant-defi.html` = bumper le badge de version pour qu'il confirme qu'il a la bonne.
+6. **Clés/secrets** : jamais dans le code commité ni dans le navigateur. Côté serveur uniquement (constante wp-config ou option WP).
+
 ## Continuité entre conversations (IMPORTANT)
 - Sur Claude Code web, **chaque conversation démarre dans un conteneur neuf** : seul ce qui est **commité + poussé** survit.
 - **Hook `SessionStart`** (`.claude/hooks/session-start.sh`, enregistré dans `.claude/settings.json`) : à chaque nouvelle session il injecte automatiquement l'état réel (branche, derniers commits, travail non commité, version active, focus templates, en-tête `HANDOFF.md`). C'est ce qui **relie les conversations** entre elles.
