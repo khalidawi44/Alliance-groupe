@@ -123,3 +123,21 @@ add_action( 'wp_footer', function () {
 	</script>
 	<?php
 }, 98 );
+
+/**
+ * Anna Photo : le site est https://annaphoto.fr (plus .eu).
+ * Trois gabarits (accueil cinema, accueil epure, audit securite) portent encore
+ * l'ancienne adresse dans leur source. Reecriture cote serveur sur la page
+ * rendue, donc visible aussi des robots. A retirer quand les sources seront
+ * corrigees (voir CARTOGRAPHIE.md, points ouverts).
+ */
+add_action( 'template_redirect', function () {
+	if ( is_admin() || is_feed() || wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		return;
+	}
+	ob_start( function ( $html ) {
+		return ( is_string( $html ) && false !== stripos( $html, 'annaphoto.eu' ) )
+			? str_ireplace( 'annaphoto.eu', 'annaphoto.fr', $html )
+			: $html;
+	} );
+}, 1 );

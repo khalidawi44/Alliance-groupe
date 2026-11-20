@@ -61,6 +61,15 @@ if [ -f .AG_FOCUS ]; then
 	echo
 fi
 
+# --- Cartographie + journal (memoire longue du projet) -----------------------
+if [ -f CARTOGRAPHIE.md ]; then
+	echo "## Cartographie (CARTOGRAPHIE.md) : LIRE EN ENTIER, puis ajouter une ligne au journal pour TOUT changement"
+	sed -n '1,4p' CARTOGRAPHIE.md
+	echo "Derniers jalons du journal :"
+	awk '/^## Journal/{f=1;next} f && /^- /{print; if(++n>=6) exit}' CARTOGRAPHIE.md 2>/dev/null || true
+	echo
+fi
+
 # --- Reprise rapide depuis HANDOFF.md ----------------------------------------
 if [ -f HANDOFF.md ]; then
 	echo "## Reprise rapide (en-tete HANDOFF.md)"
@@ -71,4 +80,4 @@ if [ -f HANDOFF.md ]; then
 fi
 echo
 
-echo "===== FIN REPRISE — mets a jour HANDOFF.md avant de fermer la session ====="
+echo "===== FIN REPRISE — mets a jour CARTOGRAPHIE.md (journal) et HANDOFF.md avant de fermer la session ====="

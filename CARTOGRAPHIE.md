@@ -1,0 +1,116 @@
+# CARTOGRAPHIE - Alliance Groupe (carte du dépôt + journal de bord)
+
+> Dernière mise à jour : 2026-11-20. Fichier tenu à jour par chaque session (Claude, Cowork ou PC).
+> Ce dépôt est PUBLIC : aucune donnée personnelle, aucun secret, aucune clé ici. Les infos privées vivent dans le Projet Claude "Alliance-groupe" (document MEMOIRE-ALLIANCE.md).
+
+## RÈGLE (à lire avant de toucher quoi que ce soit)
+
+1. Au début de chaque session : lire ce fichier en entier, puis les 6 premières lignes de `HANDOFF.md`.
+2. À chaque modification du site, du thème, d'un outil ou d'un document : ajouter UNE ligne en haut de la section "Journal" (date, quoi, fichiers, pourquoi). Si un fichier ou un système apparaît ou disparaît, mettre aussi la carte à jour.
+3. Ne jamais effacer une ligne du journal. On ajoute, on ne réécrit pas l'histoire.
+4. Les décisions de Fabrice qui ont valeur de règle sont recopiées dans la section "Décisions qui font loi".
+5. Avant de fermer : commit + push sur `main` (le site lit `main`), et mettre à jour `HANDOFF.md` (3 premières lignes + §9).
+6. Textes propres : pas de tiret long, pas de formule d'IA, aucune trace de Claude dans ce qui est écrit pour Fabrice.
+
+Le hook `.claude/hooks/session-start.sh` affiche l'en-tête de ce fichier et les derniers jalons du journal au démarrage d'une session sur le dépôt.
+
+## 1. Identité et déploiement
+
+- Site : https://alliancegroupe-inc.com (WordPress, thème maison autonome, hébergement Hostinger, pas d'Elementor).
+- Dépôt : `khalidawi44/Alliance-groupe`, branche `main` = vérité. Le site applique `main` via Apparence > SYNC GitHub (ou WP-Cron environ toutes les 5 minutes).
+- Chaîne de déploiement : push sur `main` > SYNC (`inc/ag-github-sync.php` et `ag-import.php`) > purge du cache. Détail : `docs/MECANIQUE-DEPLOIEMENT.md`. Limite connue : la SYNC ne purge pas les caches de pages (voir `BACKLOG.md`).
+- Poussée depuis une session sans PC : outil GitHub MCP `create_or_update_file` (contenu complet + sha du blob courant) ou `push_files`. Toujours `php -l` avant. Indentation en tabulations.
+- Les modèles de sites vendus (`assets/downloads/<slug>/`) se publient avec `bash scripts/release.sh <slug> <version>`. Build wordpress.org : `scripts/wporg-clean.sh`.
+
+## 2. Les autres mémoires du dépôt (qui sert à quoi)
+
+| Fichier | Rôle |
+|---|---|
+| `CLAUDE.md` | Règles de Fabrice + briques d'infrastructure. Lu à chaque session. |
+| `HANDOFF.md` | Journal de reprise très détaillé (91 Ko), plus récent en haut. En-tête + §9 mis à jour en fin de session. |
+| `INFRASTRUCTURE.md` | Base de connaissance détaillée derrière CLAUDE.md. |
+| `LECONS-ERREURS.md` | Journal des bugs et leçons. À lire avant de déboguer. |
+| `BACKLOG.md` | Travaux en attente, priorités. |
+| `.WORKING_ON.md` | Version de template active (les autres sont verrouillées). |
+| `AGENTS.md` | Version Codex de CLAUDE.md + règles CODE vs DESIGN. |
+| `DESIGN.md`, `PRODUCT.md` | Charte graphique, contexte produit (clients réels, positionnement). |
+| `docs/CARTE-CAPACITES.md` | Carte des capacités commerciales. |
+| `alliance-groupe-theme/assets/downloads/COWORK.md` | Journal partagé avec la session DESIGN (ce qui se voit va au DESIGN, ce qui se calcule va au CODE). |
+| `CARTOGRAPHIE.md` (ce fichier) | Carte complète + journal chronologique. |
+
+## 3. Carte du dépôt
+
+### Racine
+`alliance-groupe-theme/` (le site), `pentest-bridge/` (plateforme de tests Kali), `docs/`, `scripts/`, `tools/`, `deploy/` (périmé, ciblait o2switch), `content/` (pages et articles en JSON), `video-remotion/`, `equipe/` (suivi commissions), `wporg-builds/`, `blender/`, `gwen-inbox/` (dépôt d'images traité par `.github/workflows/gwen-images.yml`), `.claude/` (hooks, agents, 19 skills `ag-*`), `.codex/`, `.agents/`, `.impeccable/`. Scripts Windows à la racine : `auto-pull.bat`, `sync-maintenant.bat`, `sync-medias.bat`, `deposer-images-gwen.bat`, `installer-pipeline-gwen.bat`.
+
+### Thème `alliance-groupe-theme/`
+- Racine : `functions.php` (charge les modules), `header.php`, `footer.php`, `style.css`, `index.php`, `page.php`, `single.php`, `404.php`, `ag-import.php` (SYNC et import), `ag-stripe-admin.php`, dossier `ag-licence-manager/` (plugin de licences auto-déployé).
+- `templates/` : 72 gabarits `page-*.php`. Familles : accueils (`accueil-cinema` = accueil actuel, `accueil-epuree`, `accueil`), services (`service-web`, `-seo`, `-ads`, `-brand`, `-conseil`, `-ia`, `services`, `sites-express`, `sur-mesure`), métiers (`wordpress-artisan`, `-association`, `-avocat`, `-barber`, `-coach`, `-domicile`, `-restaurant`), réalisations (`realisations`, `realisation-gwen`, `realisation-elagage`), ambassadeurs et recruteurs (`ambassadeurs`, `espace-ambassadeur`, `guide-ambassadeur`, `contrat-ambassadeur`, `classement`, `recruteur`, `programme-racines`), espaces et compte (`connexion`, `mot-de-passe`, `espace-client`, `espace-client-app`), conversion (`contact`, `rdv`, `devis-instant`, `merci-achat`, `merci-rdv`, `audit-seo`, `audit-securite`, `refais-mon-site`, `tirage-au-sort`, `resilience-ransomware`), bureaux (`bureau-nantes`, `bureau-naples`, `bureau-marrakech`), légal (`mentions-legales`, `confidentialite`, `cookies`, `conformite-accessibilite`, `livraison`, `retours`), outils (`tester`, `prospection-mobile`, `systeme-prospection`, `composants`, `composants-site`, `templates`, `journal-ia`, `studio`, `atelier`, `experience`).
+- `template-parts/` : 38 blocs (hero, marquee, faq, process, realisations, `temoignages`, home-*, fullscreen-menu, prospect-chat, ambassador-popup, promo-video, etc.).
+- `assets/` : `css/` (main, ag-cinema, ag-immersive, audit-home, cinema-upgrades), `js/` (main, ag-cinema, ag-immersive, cinema-fx, `lib/` gsap, ScrollTrigger, lenis), `images/` (22 sous-dossiers dont `cinematique`, `egerie`, `realisations`, `gbp`, `img_3d`), `videos/`, `video/`, `tools/` (assistants HTML), `data/journal-ia.json`, `guides/`, `downloads/` (modèles vendus, `COWORK.md`).
+
+### Modules `alliance-groupe-theme/inc/` (par famille)
+- Avis et réputation : `ag-avis` (demandes d'avis, QR, page admin), `ag-geo` (lecture des avis Google via Places, llms.txt, page comparatif), `ag-google-reviews` (badge "Avis clients" Merchant Center + enquête après achat), `ag-temoignages` (formulaire et shortcode `[ag_temoignages]`), `ag-accueil-avis` (accueil : étoiles + bloc honnête, voir §4), `ag-google-lead`.
+- Vente et paiement : `ag-paypal`, `ag-licence-paypal`, `ag-offres` (prix et liens de paiement, source unique), `ag-pricing-pro`, `ag-shop-products`, `ag-merchant-feed`, `ag-meta-feed`, `ag-meta-pixel`, `ag-devis-instant`, `ag-signature`, `ag-site-creator`.
+- Ambassadeurs, zones, recrutement : `ag-ambassadeurs`, `ag-zones`, `ag-recrut-intl`, `ag-recrut-robot`, `ag-recrut-badge`, `ag-reseautage`, `ag-kit-print`, `ag-demo-board`, `ag-tirage-mensuel`, `ag-equipe`, `ag-candidatures`, `ag-missions`.
+- Prospection et CRM : `ag-prospection` (300 Ko, le plus gros), `ag-ma-prospection`, `ag-closer`, `ag-relance-chaud`, `ag-reponses`, `ag-scoreur`, `ag-enrichir`, `ag-negociateur`, `ag-coach`, `ag-directeur`, `ag-cm`, `ag-boite`, `ag-concierge`, `ag-visiteurs`, `ag-funnel`, `ag-ab`, `ag-commercial-admin`, `ag-appels-offres`.
+- SEO et contenu : `ag-seo-meta`, `ag-seo-pages`, `ag-seo-blog`, `ag-seo-autopub`, `ag-seo-local-boost`, `ag-seo-localbiz`, `ag-seo-noindex`, `ag-articles-longform`, `ag-article-failles`, `ag-audit-seo`, `ag-plan-du-site`, `ag-portfolio`, `ag-journal-ia`, `ag-redirections` (301 + charge plusieurs modules), `services-data`.
+- Sécurité et audit : `ag-hardening`, `ag-images-secu`, `ag-gardien`, `ag-audit-auto`, `ag-audit-agent`, `ag-audit-monitor`, `ag-rapport-client`, `ag-rapport-soir`, `ag-tester` (167 Ko), `ag-pentest-bridge` (pont wp-admin vers la plateforme Kali), `ag-bugbounty` (suivi des programmes de bug bounty), `ag-mandat`.
+- Espaces, comptes, PWA, messages : `ag-espaces`, `ag-pwa`, `ag-app-admin`, `ag-app-promo`, `ag-push`, `ag-sms-gateway`, `ag-smtp`, `ag-session-persist`, `ag-voice-webhook`, `ag-social`, `ag-admin-hub`.
+- Accueil et présentation : `ag-hero-typo`, `ag-video-presentation`, `ag-refais-mon-site`, `ag-refais-acces`, `ag-music`, `ag-nuit`, `ag-atelier`, `ag-composants`, `ag-composants-market`, `ag-captures`, `ag-surclassement`, `ag-provenance`, `ag-menage-preuves`.
+- Juridique et avocats : `ag-juriste`, `ag-jeune-avocat`, `ag-lead-avocat`, `ag-judilibre-proxy`, `ag-agences`.
+- Déploiement : `ag-github-sync`, `ag-ia` (appels IA côté serveur).
+
+Cette répartition est faite d'après les noms et les en-têtes lus. En cas de doute, ouvrir le fichier avant de s'y fier.
+
+### Plateforme de tests `pentest-bridge/`
+`ag-pentest.sh` (v3.3, niveaux light, normal, deep, max), `ag-runner.sh`, `scan.sh`, `coffre.sh`, assistants HTML (`assistant-pentest`, `assistant-defi`, `copilote-pentest`, `audit-generateur`), `MODELE-RAPPORT-YWH.md` (modèle de rapport YesWeHack), `OFFRE-resilience-ransomware.md`, `GUIDE-STRIPE-ET-KALI.md`, `ag-pc-desktop/` (application Windows). Principe : tirage en lecture seule, mandat obligatoire, pas de sqlmap.
+
+## 4. Systèmes expliqués
+
+### Avis Google sur le site (à lire avant toute modification)
+Il existe trois mécanismes distincts, ne pas les confondre.
+
+1. **Section d'avis de l'accueil** (`templates/page-accueil-cinema.php`, bloc `.av`, et `template-parts/temoignages.php`). Elle affiche UNIQUEMENT de vrais avis Google lus par `ag_geo_google_data()` (`inc/ag-geo.php`). Source : l'API Google Places (option `ag_places_key` + Place ID `ChIJ4zk2LCCNZqgRHQWZK660bIw`), mise en cache 6 h dans le transient `ag_geo_gdata`. Repli autorisé : avis réels saisis à la main en JSON (option `ag_geo_reviews`, page wp-admin "Avis Google"). Décision de Fabrice du 03/09/2026 : aucun témoignage écrit en dur, jamais. Si l'API ne renvoie aucun avis avec texte, la section disparaît. C'est la cause de l'absence constatée le 2026-11-20.
+2. **Badge flottant "Avis clients"** (`inc/ag-google-reviews.php`) : widget Google Merchant Center (id marchand 5795317386), en bas à droite, via `wp_footer`. Désactivable par l'option `ag_google_reviews_badge`. Google n'affiche ce badge que si le compte marchand a assez de notes d'acheteurs. Il peut donc être absent sans bug de code.
+3. **Collecte d'avis** (`inc/ag-avis.php`) : lien d'avis, QR code, email de demande quand un prospect devient client, shortcodes `[ag_avis_qr]` et `[ag_avis_bouton]`. Page admin "Avis Google".
+
+Pour faire revenir de VRAIS avis sur l'accueil : wp-admin > Avis Google > coller la clé Google Places (ancienne "Places API" activée, facturation active, clé non restreinte à une autre API) + vérifier le Place ID > Enregistrer > "Diagnostiquer" (montre la réponse exacte de Google) > "Vider le cache des avis". Alternative sans API : coller en JSON les vrais avis de la fiche dans "Avis à la main".
+
+Module `inc/ag-accueil-avis.php` (2026-11-20) : répare les étoiles vides et, quand aucun avis lisible n'existe, pose un bloc sobre "Nos avis sont sur Google" avec deux liens (lire, laisser un avis). Il n'invente ni note, ni nom, ni texte. Il se retire tout seul dès que de vrais avis apparaissent.
+
+Piège connu : le nettoyage des pictogrammes du 03/09/2026 a supprimé les caractères étoiles dans le code (`str_repeat( '', n )`). Les étoiles du gabarit d'accueil et de `temoignages.php` sont donc vides dans la source. Le module les redessine côté navigateur. Corriger la source (★ et ☆) au prochain passage sur ces fichiers.
+
+### Bug bounty
+Suivi dans wp-admin > Bug Bounty (`inc/ag-bugbounty.php`, option `ag_bb_programs`, statuts todo, wip, submitted, accepted, paid, rejected). Rapport au format YesWeHack : `pentest-bridge/MODELE-RAPPORT-YWH.md`. Un "cerveau IA" appelle l'API Claude côté serveur (`ag/v1/bb-brain`, `inc/ag-rapport-client.php`, voir `HANDOFF.md`). Les programmes privés sont confidentiels : ne jamais les nommer dans un document public.
+
+## 5. Décisions qui font loi
+
+- 2026-09-03 : aucun avis, témoignage ou chiffre inventé sur le site. Une section absente vaut mieux qu'une section fausse (accueil et `temoignages.php`).
+- 2026-09-03 : 1123 pictogrammes retirés du site public. Les flèches de direction restent. Les écrans d'administration, emails et alertes gardent leurs pictogrammes.
+- Portefeuille client réel (PRODUCT.md) : Gwen Services, Anna Photo, L.A Environnement, LFI Nantes Sud Clos Toreau (uniquement sur /realisations). Marrakech n'existe pas comme implantation réelle.
+- Anna Photo : le site est https://annaphoto.fr (plus .eu).
+- Prix d'Anthony (élagage Vertou) : le tarif n'est PAS affiché, il se fixe après visite et s'adapte aux revenus. Ne jamais écrire "tarifs affichés".
+- Ce qui se voit va à la session DESIGN, ce qui se calcule va au CODE (COWORK.md).
+
+## 6. Points ouverts et dettes connues
+
+- Avis Google : la clé Places ou le Place ID ne renvoie rien. À diagnostiquer dans wp-admin (voir §4).
+- Source des étoiles vides à corriger dans `page-accueil-cinema.php` et `template-parts/temoignages.php`.
+- `annaphoto.eu` reste écrit dans `page-accueil-cinema.php`, `page-accueil-epuree.php`, `page-audit-securite.php` et `PRODUCT.md`. Le module `ag-accueil-avis.php` réécrit le lien en `.fr` à l'affichage. À corriger dans les sources.
+- La SYNC ne purge pas les caches de pages (BACKLOG.md, priorité haute).
+- `deploy/deploy.sh` est périmé (cible o2switch, le site est sur Hostinger).
+- Le dépôt est public et contient des outils de sécurité et des notes d'infrastructure : vérifier régulièrement qu'aucun secret n'y entre (clés, jetons, identifiants).
+
+## Journal (le plus récent en haut, ne jamais effacer)
+
+- 2026-11-20 | Mémoire | Création de `CARTOGRAPHIE.md` (carte du dépôt + journal + règle de mise à jour), branchée sur le hook de démarrage de session. Copie privée complète dans le Projet Claude "Alliance-groupe" (MEMOIRE-ALLIANCE.md). Demande de Fabrice : ne plus rien oublier d'une session à l'autre.
+- 2026-11-20 | Avis Google accueil | Diagnostic : la section d'avis n'affiche que de vrais avis Google via l'API Places et se cache quand l'API ne renvoie rien (décision du 03/09). Étoiles aussi vides depuis le nettoyage des pictogrammes. Ajout de `inc/ag-accueil-avis.php` (chargé par `ag-redirections.php`) : étoiles réparées + bloc honnête "Nos avis sont sur Google". Aucun avis inventé. Reste à faire côté wp-admin : clé Places / Place ID / vider le cache.
+- 2026-11-20 | Anna Photo | Lien `annaphoto.fr` : `template-parts/realisations.php` corrigé (commit 88616f4). Réécriture `.eu` vers `.fr` à l'affichage dans `ag-accueil-avis.php` pour les 3 gabarits non encore corrigés.
+- 2026-11-18 | Bug bounty | Cerveau IA dans l'outil bug bounty : endpoint `ag/v1/bb-brain` (détail dans `HANDOFF.md`).
+- 2026-09-14 | Accueil | Carte L.A Environnement : fin du lien vers un domaine mort, maquettes ordinateur, tablette, téléphone, page `/realisation-elagage` avec démo de la canopée (commits f798afa, f3073b7). Retrait de l'affirmation fausse "tarifs affichés".
+- 2026-09-10 | Accueil | Section "Vois ton site refait" : plage d'animation du lion corrigée, derniers pictogrammes retirés (commit 59f0465).
+- 2026-09-09 | Accueil | Titre du hero adapté tablette et mobile (commit 137273b).
+- 2026-09-04 | Boutons | Boutons v2 dans les gabarits (commit 82972d3).
+- 2026-09-03 | Nettoyage | 1123 pictogrammes retirés de 82 fichiers (commit e2282d6). Cause des étoiles vides.
+- 2026-09-03 | Accueil | Bannière cookies en barre, hero plein écran, lion porteur de l'outil "refais mon site", mur d'email de la maquette IA. Suppression des témoignages écrits en dur.
