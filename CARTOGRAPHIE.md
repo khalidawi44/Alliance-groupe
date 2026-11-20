@@ -11,8 +11,9 @@
 4. Les décisions de Fabrice qui ont valeur de règle sont recopiées dans la section "Décisions qui font loi".
 5. Avant de fermer : commit + push sur `main` (le site lit `main`), et mettre à jour `HANDOFF.md` (3 premières lignes + §9).
 6. Textes propres : pas de tiret long, pas de formule d'IA, aucune trace de Claude dans ce qui est écrit pour Fabrice.
+7. Tout travail d'interface se fait pour TOUS les supports (mobile, tablette, PC), avec une configuration propre à chacun, des marges respectées, rien qui dépasse, un mouvement fluide, et un test avant d'annoncer. Règle complète et en dur : `REGLES-CONCEPTION.md` (loi posée par Fabrice le 2026-11-20).
 
-Le hook `.claude/hooks/session-start.sh` affiche l'en-tête de ce fichier et les derniers jalons du journal au démarrage d'une session sur le dépôt.
+Le hook `.claude/hooks/session-start.sh` affiche `REGLES-CONCEPTION.md` en entier, l'en-tête de ce fichier et les derniers jalons du journal au démarrage d'une session sur le dépôt.
 
 ## 1. Identité et déploiement
 
@@ -36,6 +37,7 @@ Le hook `.claude/hooks/session-start.sh` affiche l'en-tête de ce fichier et les
 | `DESIGN.md`, `PRODUCT.md` | Charte graphique, contexte produit (clients réels, positionnement). |
 | `docs/CARTE-CAPACITES.md` | Carte des capacités commerciales. |
 | `alliance-groupe-theme/assets/downloads/COWORK.md` | Journal partagé avec la session DESIGN (ce qui se voit va au DESIGN, ce qui se calcule va au CODE). |
+| `REGLES-CONCEPTION.md` | Règles de conception permanentes (tous supports, marges, fluidité, tests). Affiché à chaque démarrage de session. |
 | `CARTOGRAPHIE.md` (ce fichier) | Carte complète + journal chronologique. |
 
 ## 3. Carte du dépôt
@@ -45,19 +47,19 @@ Le hook `.claude/hooks/session-start.sh` affiche l'en-tête de ce fichier et les
 
 ### Thème `alliance-groupe-theme/`
 - Racine : `functions.php` (charge les modules), `header.php`, `footer.php`, `style.css`, `index.php`, `page.php`, `single.php`, `404.php`, `ag-import.php` (SYNC et import), `ag-stripe-admin.php`, dossier `ag-licence-manager/` (plugin de licences auto-déployé).
-- `templates/` : 72 gabarits `page-*.php`. Familles : accueils (`accueil` = ACCUEIL EN LIGNE, `accueil-cinema` et `accueil-epuree` = autres versions), services (`service-web`, `-seo`, `-ads`, `-brand`, `-conseil`, `-ia`, `services`, `sites-express`, `sur-mesure`), métiers (`wordpress-artisan`, `-association`, `-avocat`, `-barber`, `-coach`, `-domicile`, `-restaurant`), réalisations (`realisations`, `realisation-gwen`, `realisation-elagage`), ambassadeurs et recruteurs (`ambassadeurs`, `espace-ambassadeur`, `guide-ambassadeur`, `contrat-ambassadeur`, `classement`, `recruteur`, `programme-racines`), espaces et compte (`connexion`, `mot-de-passe`, `espace-client`, `espace-client-app`), conversion (`contact`, `rdv`, `devis-instant`, `merci-achat`, `merci-rdv`, `audit-seo`, `audit-securite`, `refais-mon-site`, `tirage-au-sort`, `resilience-ransomware`), bureaux (`bureau-nantes`, `bureau-naples`, `bureau-marrakech`), légal (`mentions-legales`, `confidentialite`, `cookies`, `conformite-accessibilite`, `livraison`, `retours`), outils (`tester`, `prospection-mobile`, `systeme-prospection`, `composants`, `composants-site`, `templates`, `journal-ia`, `studio`, `atelier`, `experience`).
+- `templates/` : 72 gabarits `page-*.php`. Familles : accueils (`accueil` = accueil EN LIGNE, page id 25 ; `accueil-cinema` et `accueil-epuree` = autres versions non utilisées en ligne), services (`service-web`, `-seo`, `-ads`, `-brand`, `-conseil`, `-ia`, `services`, `sites-express`, `sur-mesure`), métiers (`wordpress-artisan`, `-association`, `-avocat`, `-barber`, `-coach`, `-domicile`, `-restaurant`), réalisations (`realisations`, `realisation-gwen`, `realisation-elagage`), ambassadeurs et recruteurs (`ambassadeurs`, `espace-ambassadeur`, `guide-ambassadeur`, `contrat-ambassadeur`, `classement`, `recruteur`, `programme-racines`), espaces et compte (`connexion`, `mot-de-passe`, `espace-client`, `espace-client-app`), conversion (`contact`, `rdv`, `devis-instant`, `merci-achat`, `merci-rdv`, `audit-seo`, `audit-securite`, `refais-mon-site`, `tirage-au-sort`, `resilience-ransomware`), bureaux (`bureau-nantes`, `bureau-naples`, `bureau-marrakech`), légal (`mentions-legales`, `confidentialite`, `cookies`, `conformite-accessibilite`, `livraison`, `retours`), outils (`tester`, `prospection-mobile`, `systeme-prospection`, `composants`, `composants-site`, `templates`, `journal-ia`, `studio`, `atelier`, `experience`).
 - `template-parts/` : 38 blocs (hero, marquee, faq, process, realisations, `temoignages`, home-*, fullscreen-menu, prospect-chat, ambassador-popup, promo-video, etc.).
 - `assets/` : `css/` (main, ag-cinema, ag-immersive, audit-home, cinema-upgrades), `js/` (main, ag-cinema, ag-immersive, cinema-fx, `lib/` gsap, ScrollTrigger, lenis), `images/` (22 sous-dossiers dont `cinematique`, `egerie`, `realisations`, `gbp`, `img_3d`), `videos/`, `video/`, `tools/` (assistants HTML), `data/journal-ia.json`, `guides/`, `downloads/` (modèles vendus, `COWORK.md`).
 
 ### Modules `alliance-groupe-theme/inc/` (par famille)
-- Avis et réputation : `ag-avis` (demandes d'avis, QR, page admin), `ag-geo` (lecture des avis Google via Places, llms.txt, page comparatif), `ag-google-reviews` (badge "Avis clients" Merchant Center + enquête après achat), `ag-temoignages` (formulaire et shortcode `[ag_temoignages]`), `ag-accueil-avis` (accueil : section d'avis, voir §4), `ag-google-lead`.
+- Avis et réputation : `ag-avis` (demandes d'avis, QR, page admin), `ag-geo` (lecture des avis Google via Places, llms.txt, page comparatif), `ag-google-reviews` (badge "Avis clients" Merchant Center + enquête après achat), `ag-temoignages` (formulaire et shortcode `[ag_temoignages]`), `ag-accueil-avis` (accueil : étoiles + bloc honnête, voir §4), `ag-google-lead`.
 - Vente et paiement : `ag-paypal`, `ag-licence-paypal`, `ag-offres` (prix et liens de paiement, source unique), `ag-pricing-pro`, `ag-shop-products`, `ag-merchant-feed`, `ag-meta-feed`, `ag-meta-pixel`, `ag-devis-instant`, `ag-signature`, `ag-site-creator`.
 - Ambassadeurs, zones, recrutement : `ag-ambassadeurs`, `ag-zones`, `ag-recrut-intl`, `ag-recrut-robot`, `ag-recrut-badge`, `ag-reseautage`, `ag-kit-print`, `ag-demo-board`, `ag-tirage-mensuel`, `ag-equipe`, `ag-candidatures`, `ag-missions`.
 - Prospection et CRM : `ag-prospection` (300 Ko, le plus gros), `ag-ma-prospection`, `ag-closer`, `ag-relance-chaud`, `ag-reponses`, `ag-scoreur`, `ag-enrichir`, `ag-negociateur`, `ag-coach`, `ag-directeur`, `ag-cm`, `ag-boite`, `ag-concierge`, `ag-visiteurs`, `ag-funnel`, `ag-ab`, `ag-commercial-admin`, `ag-appels-offres`.
 - SEO et contenu : `ag-seo-meta`, `ag-seo-pages`, `ag-seo-blog`, `ag-seo-autopub`, `ag-seo-local-boost`, `ag-seo-localbiz`, `ag-seo-noindex`, `ag-articles-longform`, `ag-article-failles`, `ag-audit-seo`, `ag-plan-du-site`, `ag-portfolio`, `ag-journal-ia`, `ag-redirections` (301 + charge plusieurs modules), `services-data`.
 - Sécurité et audit : `ag-hardening`, `ag-images-secu`, `ag-gardien`, `ag-audit-auto`, `ag-audit-agent`, `ag-audit-monitor`, `ag-rapport-client`, `ag-rapport-soir`, `ag-tester` (167 Ko), `ag-pentest-bridge` (pont wp-admin vers la plateforme Kali), `ag-bugbounty` (suivi des programmes de bug bounty), `ag-mandat`.
 - Espaces, comptes, PWA, messages : `ag-espaces`, `ag-pwa`, `ag-app-admin`, `ag-app-promo`, `ag-push`, `ag-sms-gateway`, `ag-smtp`, `ag-session-persist`, `ag-voice-webhook`, `ag-social`, `ag-admin-hub`.
-- Accueil et présentation : `ag-hero-typo`, `ag-video-presentation`, `ag-refais-mon-site`, `ag-refais-acces`, `ag-music`, `ag-nuit`, `ag-atelier`, `ag-composants`, `ag-composants-market`, `ag-captures`, `ag-surclassement`, `ag-provenance`, `ag-menage-preuves`.
+- Accueil et présentation : `ag-hero-typo`, `ag-video-presentation`, `ag-accueil-carrousel` (offres de l'accueil en carrousel lent, voir `REGLES-CONCEPTION.md`), `ag-refais-mon-site`, `ag-refais-acces`, `ag-music`, `ag-nuit`, `ag-atelier`, `ag-composants`, `ag-composants-market`, `ag-captures`, `ag-surclassement`, `ag-provenance`, `ag-menage-preuves`.
 - Juridique et avocats : `ag-juriste`, `ag-jeune-avocat`, `ag-lead-avocat`, `ag-judilibre-proxy`, `ag-agences`.
 - Déploiement : `ag-github-sync`, `ag-ia` (appels IA côté serveur).
 
@@ -92,6 +94,8 @@ Suivi dans wp-admin > Bug Bounty (`inc/ag-bugbounty.php`, option `ag_bb_programs
 - Anna Photo : le site est https://annaphoto.fr (plus .eu).
 - Prix d'Anthony (élagage Vertou) : le tarif n'est PAS affiché, il se fixe après visite et s'adapte aux revenus. Ne jamais écrire "tarifs affichés".
 - Ce qui se voit va à la session DESIGN, ce qui se calcule va au CODE (COWORK.md).
+- 2026-11-20 : tous les supports à chaque fois. Pour tout travail d'interface, une configuration par support (mobile, tablette, PC), marges respectées, rien qui dépasse, mouvement fluide, test avant d'annoncer. Texte complet : `REGLES-CONCEPTION.md`.
+- 2026-11-20 : les offres de l'accueil (Essentiel, Pro, Boutique) défilent en carrousel lent, pause au survol (PC) et au doigt (mobile).
 
 ## 6. Points ouverts et dettes connues
 
@@ -100,11 +104,14 @@ Suivi dans wp-admin > Bug Bounty (`inc/ag-bugbounty.php`, option `ag_bb_programs
 - Décision à confirmer avec Fabrice : le bloc "Nos avis sont sur Google" (liens seulement) est affiché alors que la décision du 03/09 disait "rien tant qu'il n'y a pas de vrais avis". Il ne contient aucune preuve inventée ; à retirer si Fabrice préfère rien.
 - `annaphoto.eu` reste écrit dans `page-accueil-cinema.php`, `page-accueil-epuree.php`, `page-audit-securite.php` et `PRODUCT.md`. Le module `ag-accueil-avis.php` réécrit le lien en `.fr` à l'affichage (filtre de sortie). À corriger dans les sources.
 - La SYNC ne purge pas les caches de pages (BACKLOG.md, priorité haute).
+- Le 2026-11-20 à 13h30, la SYNC n'avait pas appliqué les envois de 13h05 à 13h20 (vérifié : `annaphoto.eu` toujours présent sur `/audit-securite`, WP-Cron forcé sans effet). Après un envoi, Fabrice doit cliquer Apparence > SYNC GitHub si rien ne change au bout de 10 minutes. Vérifier en ligne avant d'annoncer.
 - `deploy/deploy.sh` est périmé (cible o2switch, le site est sur Hostinger).
 - Le dépôt est public et contient des outils de sécurité et des notes d'infrastructure : vérifier régulièrement qu'aucun secret n'y entre (clés, jetons, identifiants).
 
 ## Journal (le plus récent en haut, ne jamais effacer)
 
+- 2026-11-20 | Règle multi-supports | Création de `REGLES-CONCEPTION.md` (une configuration par support, marges, rien ne dépasse, fluidité, tests aux largeurs 360, 390, 768, 1024, 1440) ; affichée par le hook de démarrage ; recopiée dans la mémoire privée du Projet. Demande de Fabrice.
+- 2026-11-20 | Accueil, offres | Les 3 cartes d'offres (Essentiel, Pro, Boutique, section `#offres` de `page-accueil.php`) défilent en carrousel lent : module `inc/ag-accueil-carrousel.php` (chargé par `ag-accueil-avis.php`, commit d02158d), sans toucher au gabarit. PC 380 px et 30 px/s, tablette 340 px et 26 px/s, mobile 80 % de l'écran et 22 px/s. Pause au survol de la souris et dès que le doigt se pose, reprise 3 s après, boucle sans couture, glissable, mouvement réduit respecté. Testé à 360, 390, 768, 1024 et 1440 px : aucun débordement. À voir en ligne après la SYNC.
 - 2026-11-20 | Mémoire | Création de `CARTOGRAPHIE.md` (carte du dépôt + journal + règle de mise à jour), branchée sur le hook de démarrage de session. Copie privée complète dans le Projet Claude "Alliance-groupe" (MEMOIRE-ALLIANCE.md). Demande de Fabrice : ne plus rien oublier d'une session à l'autre.
 - 2026-11-20 | Avis Google accueil | Diagnostic : l'accueil en ligne (`page-accueil.php`) n'a aucune section d'avis ; celle de `page-accueil-cinema.php` n'affiche que de vrais avis via l'API Places et se cache si l'API est muette (décision du 03/09). Ajout de `inc/ag-accueil-avis.php` (chargé par `ag-redirections.php`) : section d'avis posée juste avant l'Atelier IA, vrais avis si présents, sinon bloc honnête "Nos avis sont sur Google". Étoiles de `temoignages.php` réparées. Aucun avis inventé. Reste à faire côté wp-admin : clé Places / Place ID / vider le cache.
 - 2026-11-20 | Anna Photo | Lien `annaphoto.fr` : `template-parts/realisations.php` corrigé (commit 88616f4). Réécriture `.eu` vers `.fr` à l'affichage dans `ag-accueil-avis.php` pour les 3 gabarits non encore corrigés.
