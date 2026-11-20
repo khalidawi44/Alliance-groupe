@@ -61,6 +61,13 @@ if [ -f .AG_FOCUS ]; then
 	echo
 fi
 
+# --- Regles de conception permanentes (tous supports) ------------------------
+if [ -f REGLES-CONCEPTION.md ]; then
+	echo "## REGLES DE CONCEPTION (REGLES-CONCEPTION.md) : LOI, a appliquer a chaque travail d'interface"
+	cat REGLES-CONCEPTION.md
+	echo
+fi
+
 # --- Cartographie + journal (memoire longue du projet) -----------------------
 if [ -f CARTOGRAPHIE.md ]; then
 	echo "## Cartographie (CARTOGRAPHIE.md) : LIRE EN ENTIER, puis ajouter une ligne au journal pour TOUT changement"
