@@ -97,3 +97,10 @@ $ag_videopres_mod = get_stylesheet_directory() . '/inc/ag-video-presentation.php
 if ( file_exists( $ag_videopres_mod ) ) {
 	require_once $ag_videopres_mod;
 }
+
+// ── Accueil : avis Google (étoiles réparées + bloc sobre quand l'API ne renvoie
+//    aucun avis lisible). N'invente jamais d'avis. Voir CARTOGRAPHIE.md.
+$ag_accueil_avis_mod = get_stylesheet_directory() . '/inc/ag-accueil-avis.php';
+if ( file_exists( $ag_accueil_avis_mod ) ) {
+	require_once $ag_accueil_avis_mod;
+}
