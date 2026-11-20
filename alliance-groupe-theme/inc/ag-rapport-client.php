@@ -607,23 +607,20 @@ if ( ! function_exists( 'ag_bb_brain_rest' ) ) {
 		if ( strlen( $ctx ) < 3 ) { return array( 'ok' => false, 'error' => "Rien a analyser : colle des endpoints, du JS ou une reponse HTTP." ); }
 		if ( strlen( $ctx ) > 60000 ) { $ctx = substr( $ctx, 0, 60000 ); }
 		$model = (string) get_option( 'ag_claude_model', 'claude-opus-5-5' );
-		$sys = "CONTEXTE AUTORISE : programme de bug bounty PUBLIC sur la plateforme YesWeHack. L'editeur (" . ( $cible ?: 'le proprietaire du site' ) . ") invite EXPLICITEMENT les chercheurs en securite a tester le site et a lui SIGNALER les vulnerabilites (divulgation responsable) pour qu'il les corrige. Tous les tests sont NON destructifs et dans le perimetre autorise par le programme. C'est de la securite defensive : aider le proprietaire a se proteger. "
-			. "Tu aides un chercheur a prioriser ce qu'il doit EXAMINER et a verifier de facon responsable, pour produire un rapport de divulgation responsable. "
-			. "On te donne des endpoints d'API, des bouts de JavaScript ou des reponses HTTP collectes legitimement par le chercheur. "
-			. "Raisonne comme un ingenieur securite qui repere les points faibles que les autres n'ont pas vus, pas seulement les motifs connus. "
-			. "Failles QUALIFIANTES : IDOR, elevation de privileges, contournement d'auth, logique metier, SQLi, RCE, LFI/RFI/XXE/SSRF, CORS avec impact, CSRF avec impact, open redirect, secrets exposes. "
-			. "NON qualifiant (ignore) : en-tetes manquants, self-XSS, clickjacking, rate-limiting, enumeration d'utilisateurs, SSL/TLS, SPF/DKIM/DMARC, CORS sans impact. "
-			. "Tests autorises : NON destructifs uniquement, pas de scanner automatique, 5 req/s max. "
+		$sys = "Tu es un assistant de REVUE DE SECURITE DEFENSIVE. Un propriétaire de site (" . ( $cible ?: 'le site' ) . "), dans le cadre de son programme de divulgation responsable, soumet des elements techniques publics de SON PROPRE site (chemins d'API, configuration cote navigateur, en-tetes de reponse) et veut savoir quels points de securite VERIFIER et DURCIR en priorite. "
+			. "Ton role est 100% DEFENSIF : tu aides a repérer les configurations à risque et à les corriger, comme un auditeur qui renforce un systeme. Tu ne fournis jamais d'outil d'intrusion ni de charge malveillante prete a l'emploi ; tu decris les points de CONTROLE et comment VERIFIER qu'ils sont bien proteges. "
+			. "Catégories de risque a regarder : controle d'acces aux objets (references directes), separation des roles et privileges, robustesse de l'authentification, regles metier (paiement, facturation), lecture de fichiers/ressources externes mal cadrée (SSRF/XXE/LFI), partage CORS trop permissif avec donnees privees, falsification de requete (CSRF) a impact, redirection non validée, secrets ou configuration sensibles exposes cote client. "
+			. "A ignorer (faible valeur) : en-tetes manquants sans impact, auto-XSS, clickjacking, absence de limitation de débit, enumeration, bonnes pratiques SSL/TLS, SPF/DKIM/DMARC, CORS sans donnee privee. "
 			. "Reponds en FRANCAIS, court et actionnable, SANS tiret long. Structure : "
-			. "1) A TESTER EN PRIORITE : 3 a 6 pistes classees, chacune avec POURQUOI (argent, donnees perso, identifiant manipulable, fonction rare) et COMMENT tester concretement (requete a envoyer, quoi observer). "
-			. "2) Pistes de nouveaute : 1 a 3 idees de logique metier ou d'enchainement propres a cette app, qu'un debutant ne verrait pas. "
-			. "3) Ignore : une ligne. "
-			. "Cite les vrais chemins fournis. Si rien d'exploitable n'apparait, dis-le franchement et propose quoi collecter ensuite.";
+			. "1) POINTS A VERIFIER EN PRIORITE : 3 a 6 points classes, chacun avec POURQUOI c'est sensible (argent, donnees perso, reference d'objet modifiable, fonction rare) et COMMENT verifier qu'il est bien protege (quelle requete legitime envoyer, quoi observer dans la reponse). "
+			. "2) Points de durcissement fins : 1 a 3 verifications de logique metier propres a ce site qu'un novice oublierait. "
+			. "3) A laisser : une ligne. "
+			. "Cite les vrais chemins fournis. Si tout parait correctement protege, dis-le franchement et propose quels autres elements collecter pour la revue.";
 		$body = array(
 			'model'      => $model,
 			'max_tokens' => 6000, // large : laisse la place à la réflexion (thinking adaptatif) + la réponse, sinon « réponse vide »
 			'system'     => $sys,
-			'messages'   => array( array( 'role' => 'user', 'content' => "Voici ce que j'ai recupere sur la cible. Dis-moi quoi tester en priorite et comment :\n\n" . $ctx ) ),
+			'messages'   => array( array( 'role' => 'user', 'content' => "Voici des elements de mon site a passer en revue. Dis-moi quels points de securite verifier en priorite et comment confirmer qu'ils sont bien proteges :\n\n" . $ctx ) ),
 		);
 		$resp = wp_remote_post( 'https://api.anthropic.com/v1/messages', array(
 			'timeout' => 60,
