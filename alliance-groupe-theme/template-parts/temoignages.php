@@ -47,7 +47,9 @@ $is_google = ! empty( $avis );
    Une section absente vaut mieux qu'une section fausse. */
 if ( ! $is_google ) { return; }
 
-$stars_of = function ( $n ) { $n = max( 1, min( 5, (int) $n ) ); return str_repeat( '', $n ) . str_repeat( '', 5 - $n ); };
+/* Etoiles : on ecrit les caracteres en sequences \u{2605} et \u{2606} pour
+   qu'un balayage de pictogrammes ne les vide plus (c'etait le cas le 03/09/2026). */
+$stars_of = function ( $n ) { $n = max( 1, min( 5, (int) $n ) ); return str_repeat( "\u{2605}", $n ) . str_repeat( "\u{2606}", 5 - $n ); };
 $hdr_rating = $g_rating ? number_format_i18n( $g_rating, 1 ) : '5,0';
 $hdr_total  = $g_total;
 ?>
