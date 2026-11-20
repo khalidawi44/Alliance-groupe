@@ -23,6 +23,9 @@
  * Pour retrouver de VRAIS avis : wp-admin > Avis Google (cle Places + Place ID),
  * ou JSON manuel de vrais avis, puis « Vider le cache des avis ».
  *
+ * Ce fichier charge aussi le carrousel des offres (ag-accueil-carrousel.php),
+ * en bas, pour ne pas toucher au chargeur ag-redirections.php.
+ *
  * @package Alliance_Groupe_Theme
  */
 
@@ -127,3 +130,9 @@ add_action( 'template_redirect', function () {
 			: $html;
 	} );
 }, 1 );
+
+/* Carrousel des offres (module separe, voir ag-accueil-carrousel.php). */
+$ag_car_mod = get_stylesheet_directory() . '/inc/ag-accueil-carrousel.php';
+if ( file_exists( $ag_car_mod ) ) {
+	require_once $ag_car_mod;
+}
