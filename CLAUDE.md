@@ -5,43 +5,25 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 / Lu automatiquement à chaque session : j'y puise pour aider et conseiller. /
 
 > 📚 Détail complet (raccourcis, création vidéo, agents, meilleur système par type de site, config, limites) : **`INFRASTRUCTURE.md`**.
-> 🧭 **Carte des capacités du thème** (ce que je sais faire et relier : helpers emails/notifs, chaîne commerciale autonome, hooks/REST/AJAX/crons, écrans admin, options) : **`docs/CARTE-CAPACITES.md`** — à relire au lieu de réausciter tout le site. La tenir à jour à chaque nouvelle brique.
-> 🔌 **État des outils & connexions** (ce qui est DÉJÀ branché et actif : Google/avis/fiche, GA4, Meta Pixel, AdSense, flux Merchant/Meta, SMTP, Telegram/SMS, robot vocal, paiement, pilote…) avec « comment vérifier » + méthode de sonde en ligne : **`docs/ETAT-OUTILS.md`** — **à relire AVANT de dire « il faudrait brancher X »** (Fabrice a déjà configuré beaucoup : clé Google, avis, fiche, pixels…). Re-sonder et tenir à jour.
+
+## 🔒 RÈGLES FABRICE — NE JAMAIS OUBLIER (même après un résumé de conversation)
+Règles de travail demandées par Fabrice, valables partout, toujours :
+1. **Commandes toujours COMPLÈTES et prêtes à copier.** Jamais de placeholder au milieu d'une commande (ex. `REMPLACE_PAR_...` collé dans l'URL). Si une valeur est inconnue (jeton, endpoint), la mettre en **variable claire tout en haut** (ex. `URL='...'` sur sa propre ligne), pas au milieu, pour que le reste soit copiable tel quel.
+2. **Tout doit persister au refresh (Ctrl+F5).** Chaque saisie et chaque résultat d'un outil doit être mémorisé (localStorage + serveur) et restauré au chargement.
+3. **Les outils doivent être AUTONOMES** : ils analysent, tranchent et guident eux-mêmes ; Fabrice ne doit pas avoir besoin de moi (Claude-chat) pour interpréter une sortie.
+4. **Textes propres** (skill `textes-propres-sans-ia`) : aucun tiret long `—`, aucune formule d'IA, aucune trace de Claude. Vaut pour tout ce qui est écrit POUR Fabrice (outils, site, docs, visuels).
+5. **Déploiement** : pousser sur la branche de travail ET sur `main` (le SYNC du site lit `main`). Toute MAJ d'`assistant-defi.html` = bumper le badge de version pour qu'il confirme qu'il a la bonne.
+6. **Clés/secrets** : jamais dans le code commité ni dans le navigateur. Côté serveur uniquement (constante wp-config ou option WP).
 
 ## Continuité entre conversations (IMPORTANT)
 - Sur Claude Code web, **chaque conversation démarre dans un conteneur neuf** : seul ce qui est **commité + poussé** survit.
 - **Hook `SessionStart`** (`.claude/hooks/session-start.sh`, enregistré dans `.claude/settings.json`) : à chaque nouvelle session il injecte automatiquement l'état réel (branche, derniers commits, travail non commité, version active, focus templates, en-tête `HANDOFF.md`). C'est ce qui **relie les conversations** entre elles.
 - **Règle de fin de session** : avant de fermer, (1) mettre à jour les 3 premières lignes + §9 de `HANDOFF.md`, (2) commiter, (3) pousser. La conversation suivante reprendra exactement là.
 
-## ÉQUIPE COMMERCIALE — TOUJOURS ACTIVE (demande ferme de Fabrice, 06/10)
-**Les agents commerciaux sont « constamment chargés » : à chaque session, dès qu'il est question de prospection, de ventes, de la chaîne commerciale, de stats, ou de « trouver des clients », la chaîne de l'équipe s'applique AUTOMATIQUEMENT — comme la team avocat.** On ne répond jamais « de mémoire » sur une question commerciale.
-- **Skill-chef : `equipe-commerciale`** (dans `.claude/skills/`) — carte des 18 acteurs, boucle d'apprentissage, règle de déclenchement, routing. Détail vivant : **`docs/EQUIPE-COMMERCIALE.md`**.
-- **Principe (comme le cabinet) :** Claude est l'ARCHITECTE — il dirige, tranche seul, parle seul à Fabrice. **La Mémoire (`ag-memoire`) tourne AVANT toute décision** (elle liste ce qui existe/est possible : offres, prix, templates, modules, canaux, données). Puis `ag-analyste` (Léa) chiffre, `ag-architecte` décide, `ag-manager` applique, `ag-deontologue` + `ag-gardien-reputation` valident.
-- **Règle de déclenchement :** à chaque message commercial, lancer au moins un agent avant de répondre (question de fond → Mémoire + Analyste ; « ça ne vend pas » → Analyste ; « c'est légal ? » → Déontologue ; « c'est rentable ? » → Contrôleur).
-- **Côté serveur, ça tourne déjà 24/7 sans moi** : pilote auto (`inc/ag-autopilot.php`, cron-job.org /15 min) → Hugo envoie, la chasse ramène, Alessia relève, et **l'analyste pousse son orientation chaque jour** (`inc/ag-funnel.php`, écran Prospection → 📈 Tunnel & Analyste).
-- **Garde-fous (jamais franchis) :** aucun scan actif (art. 323-1), avocats email/courrier only (RIN), Bloctel + opt-out, délivrabilité `contact@` (9,5/10, chauffe progressive), **jamais inventer** une stat/preuve/fonctionnalité.
-
-## RÈGLE DE PÉRIMÈTRE — CODE ≠ DESIGN (demande ferme de Fabrice, 03/09)
-**Cette session ne touche PAS au visuel.** Tailles, couleurs, typographie, images, position d'une section, longueur d'un texte d'accroche, réglages d'animation : tout cela se voit, donc tout cela appartient à la **session Cowork (DESIGN)**, qui a le PC de Fabrice, le navigateur et les outils d'image.
-**Mon domaine :** PHP/JS/CSS de structure, ponts et branchements entre modules, points AJAX, sécurité, conformité, SEO technique, statistiques, performance, analyse, déploiement.
-**Si Fabrice demande une retouche visuelle : le lui dire et renvoyer vers la session Cowork.** Ne pas la faire « puisqu'on y est ». Deux sessions qui retouchent le même écran = conflit garanti et travail perdu. Ce qui est observé (bug d'affichage, défaut d'ergonomie) se **consigne dans `assets/downloads/COWORK.md`** pour la lane DESIGN, on ne le corrige pas soi-même.
-
-## RÈGLE DE RÉPERCUSSION (demande ferme de Fabrice, 27/08)
-**Dès qu'on change quelque chose, on vérifie systématiquement si ça doit être changé ailleurs.** Un produit modifié sans que ce qui le décrit soit mis à jour, c'est une promesse fausse faite au client.
-Checklist à dérouler à chaque changement fonctionnel d'un template :
-1. `assets/downloads/<slug>/` — code, `style.css` (en-tête Description), en-tête du plugin
-2. `assets/downloads/<slug>.json` — c'est CE fichier que lit l'updater du client
-3. `templates/page-wordpress-<metier>.php` — la page de vente : `free_features`, `premium_features`, `business_features`, `palette`, `hero_subtitle`, `description_long`
-4. `templates/page-templates.php` — la liste des templates (palette, tagline)
-5. `assets/downloads/<slug>/COWORK.md` + le `COWORK.md` maître — journal partagé avec l'autre session
-6. `bash scripts/release.sh <slug> <version>` puis `bash scripts/check-releases.sh`
-**Ne jamais annoncer sur la page de vente une fonctionnalité qui n'est pas dans le code.** Vérifier par `grep` avant d'écrire.
-
 ## Convention UX (RÈGLE pour tout nouvel outil/liste)
 - **Toute liste d'éléments** (prospects, cibles, fiches, résultats…) doit offrir par défaut : **TRI** (au moins priorité + nom + récent), **AJOUT** (bouton « + Suivre »/ajouter), et **SUPPRESSION EN MASSE** (cases à cocher + « tout sélectionner » + bouton « Supprimer la sélection » ; pour des prospects, AJAX `ag_prospect_delete_bulk`). Les actions de contact (Mail/SMS/WhatsApp/Appel) + **Relancer** sont présentes sur chaque élément, en respectant la déontologie (avocats = email/courrier uniquement).
 
 ## Déploiement (workflow)
-> 🔁 **Toute la chaîne expliquée** (conversation → commit → `main` → sites en ligne, cron 5 min, updater des templates vendus, robot images Gwen, pièges) : **`docs/MECANIQUE-DEPLOIEMENT.md`**. À lire avant de pousser quoi que ce soit pour la première fois.
 - Dév sur la branche de travail courante (ex. `claude/infrastructure-md-review-6R3D2` ; vérifier `git branch --show-current`), puis **merge ff-only dans `main`** + push.
 - Le site applique via **Apparence → SYNC GitHub** : « Vérifier MAJ » puis « SYNC FICHIERS DU THÈME », puis purge cache + Ctrl/recharge.
 - Thème autonome (pas d'Elementor). Templates = `alliance-groupe-theme/templates/page-*.php` (Template Name). Logique = `alliance-groupe-theme/inc/*.php`, chargés depuis `functions.php`.
