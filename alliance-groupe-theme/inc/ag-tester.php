@@ -41,6 +41,25 @@ if ( ! function_exists( 'ag_tester_opt' ) ) {
 	}
 }
 
+/* Lien de paiement réellement configuré ('' si aucun) : 'report' = rapport complet, 'expert' = Diagnostic Expert 24h. */
+if ( ! function_exists( 'ag_tester_pay_link' ) ) {
+	function ag_tester_pay_link( $kind = 'report' ) {
+		$u = ( 'expert' === $kind ) ? (string) get_option( 'ag_tester_deep_pay_url', '' ) : '';
+		if ( '' === trim( $u ) ) $u = (string) get_option( 'ag_tester_pay_url', '' );
+		$u = trim( $u );
+		return preg_match( '#^https?://#i', $u ) ? $u : '';
+	}
+}
+/* Alerte admin : sans lien de paiement, une commande ne peut pas être encaissée en ligne. */
+add_action( 'admin_notices', function () {
+	if ( ! current_user_can( 'manage_options' ) ) return;
+	$manque = array();
+	if ( '' === ag_tester_pay_link( 'report' ) ) $manque[] = 'rapport complet (' . ag_tester_opt( 'price' ) . ' €)';
+	if ( '' === ag_tester_pay_link( 'expert' ) ) $manque[] = 'Diagnostic Expert 24h (' . ag_tester_opt( 'deep_price' ) . ' €)';
+	if ( ! $manque ) return;
+	echo '<div class="notice notice-error"><p><strong>Vente bloquée : lien de paiement manquant</strong> pour ' . esc_html( implode( ' et ', $manque ) ) . '. Un client qui commande sur « Tester mon site » ne peut pas payer en ligne. <a href="' . esc_url( admin_url( 'options-general.php?page=ag-tester' ) ) . '">Coller le lien PayPal ou Stripe ici</a>.</p></div>';
+} );
+
 /* --------------------------------------------------- Réglages (Settings API) */
 add_action( 'admin_menu', function () {
 	add_options_page( 'Tester / Audit', 'Tester / Audit', 'manage_options', 'ag-tester', 'ag_tester_settings_page' );
@@ -376,7 +395,7 @@ if ( ! function_exists( 'ag_tester_order' ) ) {
 
 		$base       = wp_get_referer() ?: home_url( '/tester-mon-site' );
 		$report_url = add_query_arg( array( 'rapport' => $aid ), $base );
-		$pay_url    = ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' );
+		$pay_url    = ag_tester_pay_link( 'report' );
 
 		// Email : FACTURE + lien rapport complet + paiement.
 		if ( function_exists( 'ag_email_wrap' ) ) {
@@ -384,7 +403,11 @@ if ( ! function_exists( 'ag_tester_order' ) ) {
 			$inner .= '<p>Merci pour votre commande. Votre <strong>rapport d\'audit complet</strong> de ' . esc_html( $url ) . ' est débloqué :</p>';
 			$inner .= ag_email_button( 'Voir mon rapport complet →', $report_url );
 			$inner .= ag_tester_facture_html( $invoice_no, $nom, $email, $url, $price );
-			$inner .= '<p>Règlement :</p>' . ag_email_button( 'Payer ma facture (' . number_format_i18n( $price, 0 ) . ' €) →', $pay_url );
+			if ( $pay_url ) {
+				$inner .= '<p>Règlement :</p>' . ag_email_button( 'Payer ma facture (' . number_format_i18n( $price, 0 ) . ' €) →', $pay_url );
+			} else {
+				$inner .= '<p>Règlement : vous recevez votre lien de paiement sécurisé par email dans la journée.</p>';
+			}
 			$inner .= '<p style="font-size:12px;color:#9a9aa5">Commande acceptée électroniquement le ' . esc_html( $consent['accepted_at'] ) . ' (IP ' . esc_html( $consent['ip'] ) . ').'
 				. ( $waive ? ' Vous avez demandé la fourniture immédiate et renoncé au délai de rétractation de 14 jours.' : '' ) . '</p>';
 			wp_mail(
@@ -395,7 +418,7 @@ if ( ! function_exists( 'ag_tester_order' ) ) {
 			);
 		}
 		if ( function_exists( 'ag_push' ) ) {
-			ag_push( '🧾 Commande rapport audit', $nom . ' (' . $email . ') — ' . $url . ' — facture ' . $invoice_no . ' — ' . $price . ' €' );
+			ag_push( '🧾 Commande rapport audit', $nom . ' (' . $email . ') — ' . $url . ' — facture ' . $invoice_no . ' — ' . $price . ' €' . ( $pay_url ? '' : ' — AUCUN LIEN DE PAIEMENT CONFIGURE : envoyer le lien de reglement a ce client maintenant' ) );
 		}
 
 		wp_safe_redirect( add_query_arg( array( 'rapport' => $aid, 'ok' => '1' ), $base ) );
@@ -434,7 +457,13 @@ if ( ! function_exists( 'ag_tester_render' ) ) {
 		if ( $rapport ) {
 			$data = get_transient( 'ag_tester_' . $rapport );
 			if ( $data && ! empty( $data['unlocked'] ) && function_exists( 'ag_audit_render_report' ) ) {
-				if ( isset( $_GET['ok'] ) ) echo '<p style="max-width:920px;margin:18px auto;color:#28a745;text-align:center;font-weight:700">✅ Commande enregistrée — votre facture vient de vous être envoyée par email.</p>';
+				if ( isset( $_GET['ok'] ) ) {
+					echo '<p style="max-width:920px;margin:18px auto;color:#28a745;text-align:center;font-weight:700">✅ Commande enregistrée — votre facture vient de vous être envoyée par email.</p>';
+					$ag_pay = ag_tester_pay_link( 'report' );
+					if ( $ag_pay ) {
+						echo '<p style="max-width:920px;margin:0 auto 18px;text-align:center;padding:0 16px"><a href="' . esc_url( $ag_pay ) . '" target="_blank" rel="noopener" style="display:inline-block;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#0a0a0f;font-weight:900;text-decoration:none;padding:14px 26px;border-radius:999px">Régler ma facture (' . esc_html( number_format_i18n( (float) ag_tester_opt( 'price' ), 0 ) ) . ' €) →</a></p>';
+					}
+				}
 				ag_audit_render_report( $data['audit'], $data['prenom'] ?? '' );
 			} else {
 				echo '<section style="background:#0a0a0f;color:#fff;padding:80px 24px;text-align:center"><p>🔒 Ce rapport est verrouillé. Lancez un test ou débloquez votre rapport.</p></section>';
@@ -456,6 +485,15 @@ if ( ! function_exists( 'ag_tester_render_expert' ) ) {
 		$url   = $a['url'] ?? '';
 		$host  = (string) wp_parse_url( $url, PHP_URL_HOST );
 		$price = (float) ag_tester_opt( 'deep_price' );
+		if ( isset( $_GET['recu'] ) ) {
+			echo '<section style="background:linear-gradient(180deg,#0a0a0f,#14141c);color:#fff;padding:60px 20px;min-height:60vh"><div style="max-width:640px;margin:0 auto;text-align:center">'
+				. '<div style="font-size:2.4rem">✅</div>'
+				. '<h1 style="font-family:Georgia,serif;font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.15;margin:8px 0 14px">Commande enregistrée pour <em style="color:#F3D27A;font-style:italic">' . esc_html( $host ) . '</em></h1>'
+				. '<p style="color:rgba(255,255,255,.85);line-height:1.6;margin:0 0 12px">Votre autorisation est horodatée. Vous recevez votre <strong>lien de paiement sécurisé par email dans l\'heure</strong> (heures ouvrées). L\'audit démarre dès le règlement et le rapport vous parvient sous 24 h.</p>'
+				. '<p style="color:rgba(255,255,255,.6);font-size:.9rem;margin:0">Une question ? ' . esc_html( ag_tester_opt( 'email' ) ) . '</p>'
+				. '</div></section>';
+			return;
+		}
 		?>
 		<section style="background:linear-gradient(180deg,#0a0a0f,#14141c);color:#fff;padding:60px 24px;min-height:70vh">
 			<div style="max-width:640px;margin:0 auto">
@@ -508,26 +546,34 @@ if ( ! function_exists( 'ag_tester_expert_order' ) ) {
 
 		// Notif admin : nouvelle commande Expert.
 		if ( function_exists( 'ag_push' ) ) {
-			ag_push( '🔬 Commande Diagnostic Expert 24h', $host . ' — ' . $email . ' — mandat ' . $mandat . ' — LANCER LE RUNNER KALI' );
+			ag_push( '🔬 Commande Diagnostic Expert 24h', $host . ' — ' . $email . ' — mandat ' . $mandat . ( ag_tester_pay_link( 'expert' ) ? ' — LANCER LE RUNNER KALI APRES PAIEMENT' : ' — AUCUN LIEN DE PAIEMENT CONFIGURE : envoyer le lien de reglement a ce client dans l heure' ) );
 		}
 
 		// Email de confirmation au client (paiement + délai 24h).
-		$pay = ag_tester_opt( 'deep_pay_url' ) ?: ( ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' ) );
+		$pay = ag_tester_pay_link( 'expert' );
 		if ( $email && function_exists( 'ag_email_wrap' ) ) {
 			$price = (float) ag_tester_opt( 'deep_price' );
 			$inner  = '<p>Bonjour ' . esc_html( $nom ?: '' ) . ',</p>';
 			$inner .= '<p>Merci pour votre commande du <strong>Diagnostic Expert 24h</strong> pour <strong style="color:#D4B45C">' . esc_html( $host ) . '</strong>.</p>';
 			if ( $price > 0 ) {
-				$inner .= '<p>Pour lancer l\'audit, merci de finaliser le paiement (' . esc_html( number_format_i18n( $price, 0 ) ) . ' € TTC) :</p>';
-				$inner .= ag_email_button( 'Payer et lancer mon audit →', $pay );
+				if ( $pay ) {
+					$inner .= '<p>Pour lancer l\'audit, merci de finaliser le paiement (' . esc_html( number_format_i18n( $price, 0 ) ) . ' € TTC) :</p>';
+					$inner .= ag_email_button( 'Payer et lancer mon audit →', $pay );
+				} else {
+					$inner .= '<p>Vous recevez votre lien de paiement sécurisé (' . esc_html( number_format_i18n( $price, 0 ) ) . ' € TTC) par email dans l\'heure, en heures ouvrées.</p>';
+				}
 			}
 			$inner .= '<p>Dès réception du paiement, notre expert réalise l\'audit approfondi et vous envoie le <strong>rapport complet + plan de correction chiffré sous 24 h</strong>.</p>';
 			$inner .= '<p style="font-size:12px;color:#9a9aa5">Audit réalisé avec votre autorisation (référence ' . esc_html( $mandat ) . '), enregistrée le ' . esc_html( current_time( 'd/m/Y H:i' ) ) . '.</p>';
 			wp_mail( $email, 'Votre Diagnostic Expert 24h — ' . $host, ag_email_wrap( 'Commande reçue', $inner ), array( 'Content-Type: text/html; charset=UTF-8' ) );
 		}
 
-		// Redirige vers le paiement (ou /contact si pas de lien configuré).
-		wp_safe_redirect( $pay );
+		// Redirige vers le paiement ; sans lien configuré, accusé de commande clair (jamais une page contact muette).
+		if ( $pay ) {
+			wp_redirect( esc_url_raw( $pay ) );
+		} else {
+			wp_safe_redirect( add_query_arg( array( 'aid' => $aid, 'expert' => '1', 'recu' => '1' ), home_url( '/tester-mon-site' ) ) );
+		}
 		exit;
 	}
 }

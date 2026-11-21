@@ -1,7 +1,9 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-11-20 — branche de travail : `main` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-11-21 — branche de travail : `claude/gallant-turing-fdpbk7` (tampon auto à chaque commit).
+
+> **💶 ENCAISSEMENT TESTER MON SITE (21/11, routine commerciale) :** la commande Diagnostic Expert 290 € n'atteignait jamais le paiement (`wp_safe_redirect` bloque PayPal/Stripe ; sans lien, renvoi muet vers /contact). Corrigé dans `inc/ag-tester.php` (`ag_tester_pay_link()`, accusé de commande, bouton de règlement sur la confirmation du rapport 49 €, bandeau admin si lien manquant). **ACTION FABRICE : coller les 2 liens de paiement dans Réglages, Tester / Audit, puis SYNC.** En attente de fusion : branche `claude/gallant-turing-fdpbk7`.
 
 > **🧠 CERVEAU IA DANS L'OUTIL BUG BOUNTY (18/11d) :** Fabrice veut que l'outil RAISONNE sur les nouveautés sans Claude-chat. Ajout : endpoint REST `ag/v1/bb-brain` (+ admin-ajax `ag_bb_brain`, auth `ag_rap_rest_authed`) dans ag-rapport-client.php → appelle l'API Claude en HTTP serveur (`wp_remote_post` vers api.anthropic.com/v1/messages, modèle `claude-opus-5-5` par défaut via option `ag_claude_model`) avec un system prompt de chasseur senior : rend « 🎯 à tester en priorité » (pourquoi + comment) + « 💡 pistes de nouveauté » + « 🗑️ ignore ». Clé API lue CÔTÉ SERVEUR seulement : constante `AG_CLAUDE_KEY` (wp-config) OU option `ag_claude_key` (jamais commitée, jamais dans le navigateur). Endpoint `ag/v1/bb-setkey` (ADMIN only) pour poser la clé depuis l'outil. Côté assistant (panneau scope) : bloc « 🧠 Cerveau IA » (textarea + bouton Analyser + bouton 🔑 Ma clé IA) → `bbBrain()`/`bbSetKeyPrompt()` via `agApi`. Testé Playwright (UI + fonctions + 0 erreur JS) + php -l OK. Badge `v2026-11-18d`. **ACTION FABRICE : poser sa clé Claude une fois (🔑 Ma clé IA, connecté admin WP) — coût ~0,05 $/analyse sur ses crédits API.** Avant (18/11a-c) : analyseur de manques Hacktivity + coloration route 🟢/🔴 + masquage des outils scanner en mode scope.
 
