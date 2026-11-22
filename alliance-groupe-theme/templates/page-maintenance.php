@@ -87,7 +87,7 @@ $ag_plans = array(
 								<li><?php echo wp_kses( $f, array( 'strong' => array(), 'em' => array() ) ); ?></li>
 							<?php endforeach; ?>
 						</ul>
-						<a href="<?php echo esc_url( $ag_contact ); ?>" class="<?php echo $p['best'] ? 'ag-btn-gold' : 'ag-btn-ghost'; ?> ag-maint-cta">Choisir <?php echo esc_html( $p['name'] ); ?></a>
+						<a href="<?php echo esc_url( add_query_arg( 'offre', sanitize_title( $p['name'] ), $ag_contact ) . '#ag-contact-form' ); ?>" class="<?php echo $p['best'] ? 'ag-btn-gold' : 'ag-btn-ghost'; ?> ag-maint-cta">Choisir <?php echo esc_html( $p['name'] ); ?></a>
 					</div>
 				<?php endforeach; ?>
 			</div>

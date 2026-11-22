@@ -52,7 +52,7 @@ get_header();
                     <?php if (shortcode_exists('wpforms')) : ?>
                         <?php echo do_shortcode('[wpforms id="123"]'); ?>
                     <?php else : ?>
-                    <form class="ag-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST">
+                    <form class="ag-form" id="ag-contact-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST">
                         <input type="hidden" name="action" value="ag_contact_form">
                         <?php wp_nonce_field('ag_contact_nonce', 'ag_nonce'); ?>
 
@@ -77,6 +77,9 @@ get_header();
                                 <option value="publicite">Publicité Digitale</option>
                                 <option value="branding">Branding</option>
                                 <option value="conseil">Conseil Stratégique</option>
+                                <option value="maintenance-serenite">Maintenance : formule Sérénité</option>
+                                <option value="maintenance-protection">Maintenance : formule Protection</option>
+                                <option value="maintenance-conformite">Maintenance : formule Conformité</option>
                             </select>
                         </div>
 
@@ -87,6 +90,23 @@ get_header();
 
                         <button type="submit" class="ag-btn-gold">Envoyer le message →</button>
                     </form>
+                    <script>
+                    /* Arrivée depuis /maintenance (?offre=serenite|protection|conformite) :
+                       la formule est déjà choisie et le message est amorcé. Fait côté
+                       navigateur pour rester juste même si la page est servie depuis un cache. */
+                    (function () {
+                        var noms = { serenite: 'Sérénité', protection: 'Protection', conformite: 'Conformité' };
+                        var offre = '';
+                        try { offre = (new URLSearchParams(window.location.search).get('offre') || '').toLowerCase(); } catch (e) {}
+                        if (!noms[offre]) { return; }
+                        var sel = document.getElementById('ag-service');
+                        var msg = document.getElementById('ag-message');
+                        if (sel) { sel.value = 'maintenance-' + offre; }
+                        if (msg && !msg.value) {
+                            msg.value = 'Bonjour, je souhaite la formule ' + noms[offre] + ' pour mon site.\nAdresse de mon site : ';
+                        }
+                    })();
+                    </script>
                     <?php endif; ?>
                 </div>
             </div>
