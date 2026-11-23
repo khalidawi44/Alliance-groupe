@@ -175,3 +175,14 @@ function ag_gcr_record_order( $amount, $email, $txn, $type = '', $resource = arr
 	update_option( 'ag_gcr_pending', $list, false );
 }
 add_action( 'ag_paypal_payment_verified', 'ag_gcr_record_order', 30, 5 );
+
+/* Accueil : avis Google (ag-accueil-avis.php) et carrousel des offres
+   (ag-accueil-carrousel.php). Charges ici parce que CE fichier est requis par
+   functions.php. ag-redirections.php, lui, n'est charge par rien : ne jamais y
+   brancher de module (voir CARTOGRAPHIE.md, journal 2026-11-23). */
+foreach ( array( 'ag-accueil-avis.php', 'ag-accueil-carrousel.php' ) as $ag_home_mod ) {
+	$ag_home_mod_path = get_stylesheet_directory() . '/inc/' . $ag_home_mod;
+	if ( file_exists( $ag_home_mod_path ) ) {
+		require_once $ag_home_mod_path;
+	}
+}
