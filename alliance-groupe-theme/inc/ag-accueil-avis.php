@@ -131,6 +131,13 @@ add_action( 'template_redirect', function () {
 	} );
 }, 1 );
 
+/* Un seul avis : on centre la carte au lieu de la laisser a gauche d'une grille a deux colonnes. */
+add_action( 'wp_head', function () {
+	if ( is_front_page() ) {
+		echo '<style id="ag-avis-un">.ag-avis__grid:has(>.ag-avis__card:only-child){grid-template-columns:minmax(0,560px);justify-content:center}</style>' . "\n";
+	}
+}, 99 );
+
 /* Carrousel des offres (module separe, voir ag-accueil-carrousel.php). */
 $ag_car_mod = get_stylesheet_directory() . '/inc/ag-accueil-carrousel.php';
 if ( file_exists( $ag_car_mod ) ) {
