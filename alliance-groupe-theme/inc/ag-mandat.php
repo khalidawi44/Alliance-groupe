@@ -56,7 +56,7 @@ if ( ! function_exists( 'ag_mandat_render' ) ) {
 		$err    = isset( $_GET['err'] ) ? sanitize_key( $_GET['err'] ) : '';
 		$okp    = isset( $_GET['ok'] );
 		?><!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<title>Commander — <?php echo esc_html( $T['label'] ); ?> · Alliance Groupe</title>
+		<title>Commander : <?php echo esc_html( $T['label'] ); ?> · Alliance Groupe</title>
 		<style>
 			*{box-sizing:border-box}body{margin:0;background:#0b0b0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.55;}
 			.wrap{max-width:620px;margin:0 auto;padding:24px 16px 60px;}
@@ -69,7 +69,7 @@ if ( ! function_exists( 'ag_mandat_render' ) ) {
 			label.f{display:block;font-weight:600;color:#e6e6ee;margin:12px 0 5px;font-size:.9rem;}
 			input[type=text],input[type=email],input[type=url],input[type=tel]{width:100%;padding:13px;border-radius:10px;border:1px solid #333;background:#0e0e13;color:#fff;font-size:1rem;}
 			.chk{display:flex;gap:10px;align-items:flex-start;margin:14px 0;color:#cfcfd6;font-size:.86rem;}
-			.chk input{margin-top:3px;transform:scale(1.25);}
+			.chk input{margin-top:3px;transform:scale(1.25);flex:0 0 auto;}.chk span{flex:1;min-width:0;}
 			.cta{display:block;width:100%;text-align:center;background:linear-gradient(135deg,#d4b45c,#b98f2f);color:#0b0b0f;font-weight:800;padding:16px;border-radius:14px;text-decoration:none;font-size:1.05rem;border:0;cursor:pointer;margin-top:16px;}
 			.mand{background:#101826;border:1px solid #24405f;border-radius:12px;padding:12px 14px;margin:14px 0;color:#aac4e6;font-size:.84rem;}
 			.err{color:#ff6b6b;font-size:.86rem;margin:8px 0;}
@@ -99,11 +99,11 @@ if ( ! function_exists( 'ag_mandat_render' ) ) {
 				<input type="email" name="email" required placeholder="vous@exemple.com">
 				<label class="f">Téléphone</label>
 				<input type="tel" name="phone" placeholder="06 12 34 56 78">
-				<div class="mand">🔒 <strong>Mandat / autorisation</strong> — obligatoire pour tout audit approfondi (art. 323-1 C. pénal). En cochant, vous signez électroniquement cette autorisation (date + heure + IP conservées).</div>
-				<label class="chk"><input type="checkbox" name="mandat" value="1" required> J'atteste être le <strong>propriétaire ou le représentant autorisé</strong> du site ci-dessus et j'<strong>autorise Alliance Groupe</strong> à réaliser cet audit de sécurité sur ce site.</label>
-				<label class="chk"><input type="checkbox" name="waive" value="1"> Je demande la <strong>fourniture immédiate après paiement</strong> et renonce à mon délai de rétractation de 14 jours (services numériques).</label>
-				<label class="chk"><input type="checkbox" name="cgv" value="1" required> J'accepte les <strong>conditions générales</strong> et je passe une <strong>commande ferme</strong> de <?php echo esc_html( number_format_i18n( $price, 0 ) ); ?> €.</label>
-				<button type="submit" class="cta"><?php echo $haspay ? '💳 Payer ' . esc_html( number_format_i18n( $price, 0 ) ) . ' € et commander' : '📩 Commander (' . esc_html( number_format_i18n( $price, 0 ) ) . ' €) — recevoir le lien de paiement'; ?></button>
+				<div class="mand">🔒 <strong>Mandat / autorisation</strong> : obligatoire pour tout audit approfondi (art. 323-1 C. pénal). En cochant, vous signez électroniquement cette autorisation (date + heure + IP conservées).</div>
+				<label class="chk"><input type="checkbox" name="mandat" value="1" required><span>J'atteste être le <strong>propriétaire ou le représentant autorisé</strong> du site ci-dessus et j'<strong>autorise Alliance Groupe</strong> à réaliser cet audit de sécurité sur ce site.</span></label>
+				<label class="chk"><input type="checkbox" name="waive" value="1"><span>Je demande la <strong>fourniture immédiate après paiement</strong> et renonce à mon délai de rétractation de 14 jours (services numériques).</span></label>
+				<label class="chk"><input type="checkbox" name="cgv" value="1" required><span>J'accepte les <strong>conditions générales</strong> et je passe une <strong>commande ferme</strong> de <?php echo esc_html( number_format_i18n( $price, 0 ) ); ?> €.</span></label>
+				<button type="submit" class="cta"><?php echo $haspay ? '💳 Payer ' . esc_html( number_format_i18n( $price, 0 ) ) . ' € et commander' : '📩 Commander (' . esc_html( number_format_i18n( $price, 0 ) ) . ' €) et recevoir le lien de paiement'; ?></button>
 			</form>
 			<p class="leg">Paiement sécurisé. Facture envoyée par email. L'audit approfondi n'est jamais réalisé sans votre autorisation écrite.</p>
 		</div></body></html><?php
@@ -200,7 +200,7 @@ if ( ! function_exists( 'ag_rdv_render' ) ) {
 		$ok   = isset( $_GET['ok'] );
 		$err  = isset( $_GET['err'] ) ? sanitize_key( $_GET['err'] ) : '';
 		?><!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-		<title>Prendre rendez-vous — Site personnalisé · Alliance Groupe</title>
+		<title>Prendre rendez-vous : site personnalisé · Alliance Groupe</title>
 		<style>
 			*{box-sizing:border-box}body{margin:0;background:#0b0b0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.55;}
 			.wrap{max-width:620px;margin:0 auto;padding:24px 16px 60px;}
@@ -225,7 +225,7 @@ if ( ! function_exists( 'ag_rdv_render' ) ) {
 			<?php else : ?>
 				<span class="tag">🎨 SITE 100% PERSONNALISÉ</span>
 				<h1>Prendre rendez-vous</h1>
-				<p class="desc">Pour un site sur-mesure, dites-nous ce que vous voulez et choisissez un créneau. On vous rappelle pour en parler — pas d'engagement.</p>
+				<p class="desc">Pour un site sur-mesure, dites-nous ce que vous voulez et choisissez un créneau. On vous rappelle pour en parler, sans engagement.</p>
 				<?php if ( 'email' === $err ) : ?><p class="err">Merci d'indiquer au moins un email valide et ce que vous souhaitez.</p><?php endif; ?>
 				<?php if ( 'nonce' === $err ) : ?><p class="err">Session expirée, réessayez.</p><?php endif; ?>
 				<form class="card" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">

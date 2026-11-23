@@ -265,6 +265,14 @@ if ( file_exists( $ag_tester_file ) ) {
     require_once $ag_tester_file;
 }
 
+// ── 1c5e-bis2. (restauré le 23/11) Tunnels sans appel : commande d'audit avec mandat signé
+//    (/?ag_mandat=1&tier=deep|expert) + rendez-vous site personnalisé (/?ag_rdv=1).
+//    Perdu lors de la fusion du début novembre, d'où des liens de commande morts.
+$ag_mandat_file = get_stylesheet_directory() . '/inc/ag-mandat.php';
+if ( file_exists( $ag_mandat_file ) ) {
+    require_once $ag_mandat_file;
+}
+
 // ── 1c5e-ter. Pont « Audit approfondi » wp-admin ↔ Kali (file d'attente sécurisée)
 $ag_pentest_bridge_file = get_stylesheet_directory() . '/inc/ag-pentest-bridge.php';
 if ( file_exists( $ag_pentest_bridge_file ) ) {

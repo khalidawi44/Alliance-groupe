@@ -604,7 +604,7 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 				<!-- Les 3 niveaux d'audit (escalier) -->
 				<div style="margin:46px auto 0;max-width:980px;text-align:left">
 					<h2 style="text-align:center;font-family:Georgia,serif;font-size:1.6rem;color:#fff;margin:0 0 22px">3 niveaux d'audit, selon vos besoins</h2>
-					<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+					<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px">
 						<div style="background:rgba(40,167,69,.08);border:1px solid rgba(40,167,69,.4);border-radius:14px;padding:20px">
 							<div style="color:#28a745;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">① Test léger · gratuit</div>
 							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Diagnostic non-intrusif immédiat : score, failles visibles, en-têtes, SSL, xmlrpc. <strong style="color:#fff">C'est le test ci-dessus.</strong></p>
@@ -617,7 +617,12 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 						<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:20px">
 							<div style="color:#fff;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">③ Diagnostic Expert 24h · sur mandat</div>
 							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Scan en profondeur (simulation d'attaque réelle, ports, vulnérabilités, plugins) sous votre <strong style="color:#fff">autorisation</strong>. <strong style="color:#F3D27A">Rapport complet + plan de correction chiffré, livré en moins de 24 h.</strong></p>
-							<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="display:inline-block;margin-top:12px;color:#F3D27A;font-weight:700;text-decoration:none">Nous contacter →</a>
+							<?php
+							// Commande directe (mandat signé en ligne, sans appel) si le tunnel est chargé, sinon contact.
+							$ag_exp_prix = (float) ag_tester_opt( 'deep_price' );
+							$ag_exp_url  = function_exists( 'ag_mandat_render' ) ? add_query_arg( array( 'ag_mandat' => 1, 'tier' => 'expert' ), home_url( '/' ) ) : home_url( '/contact' );
+							?>
+							<a href="<?php echo esc_url( $ag_exp_url ); ?>" style="display:inline-block;margin-top:14px;padding:12px 20px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;border-radius:999px;text-decoration:none"><?php echo $ag_exp_prix > 0 ? 'Commander · ' . esc_html( number_format_i18n( $ag_exp_prix, 0 ) ) . ' € →' : 'Commander →'; ?></a>
 						</div>
 					</div>
 					<p style="text-align:center;color:rgba(255,255,255,.45);font-size:.78rem;margin:14px 0 0">L'audit approfondi et le pentest ne sont jamais réalisés sans autorisation écrite du propriétaire (art. 323-1 C. pénal).</p>
@@ -628,7 +633,7 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 					<p style="text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;margin:0 0 16px">Vous cherchez autre chose ?</p>
 					<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
 						<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">✨ <strong>Créer un site</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Vitrine, e-commerce, dès 490 €</span></a>
-						<a href="<?php echo esc_url( home_url( '/maintenance' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">🛡️ <strong>Maintenance</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Sérénité, dès 49 €/mois</span></a>
+						<a href="<?php echo esc_url( home_url( '/maintenance' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">🛡️ <strong>Maintenance</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Sérénité, dès 29 €/mois</span></a>
 						<a href="<?php echo esc_url( home_url( '/templates-wordpress' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">📦 <strong>Templates métier</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Prêts à l'emploi, gratuits</span></a>
 					</div>
 				</div>
