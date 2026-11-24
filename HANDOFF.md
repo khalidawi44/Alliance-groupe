@@ -1,7 +1,9 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-11-23 — branche de travail : `claude/gallant-turing-axc6t2` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-11-24 — branche de travail : `claude/gallant-turing-nrnp0f` (tampon auto à chaque commit).
+
+> **🟢 24/11 — DÉCISION ATTENDUE DE FABRICE : rallumer les 3 cerveaux commerciaux ?** PR en brouillon prête (branche `claude/gallant-turing-nrnp0f`, PAS encore sur main) qui recharge `ag-funnel` (mesure du tunnel + « Signaux du filon » = le seul indicateur qui dit si l'audit payant devient abonnement), `ag-scoreur` (contacter d'abord les meilleurs prospects) et `ag-gardien` (protéger la délivrabilité). Les trois vérifiés SANS effet de bord : aucune tâche planifiée, aucun envoi automatique vers un prospect (l'email d'offre reste un bouton admin manuel). Fabrice : merger la PR → SYNC → le site se met à MESURER le filon. Détail : `CARTOGRAPHIE.md`, journal du 24/11.
 
 > **⚠️ 23/11 : 32 MODULES NON CHARGÉS, À DÉCIDER PAR FABRICE.** Depuis la fusion du début novembre (9a7e274), `functions.php` ne charge plus que 51 modules sur 80. Restauré le 23/11 : `inc/ag-mandat.php` (commande d'audit avec mandat signé, `/?ag_mandat=1&tier=expert`, et rendez-vous `/?ag_rdv=1`), branché sur `/tester-mon-site` (bouton « Commander · 290 € »). Restent éteints, entre autres : `ag-redirections` (avis d'accueil + carrousel des offres), `ag-funnel` (Signaux du filon), `ag-scoreur`, `ag-gardien`, `ag-ab`. Liste complète et méthode dans `CARTOGRAPHIE.md`, journal du 23/11. Ne pas tout rallumer sans son accord : certains relancent des tâches planifiées et des envois.
 

@@ -346,6 +346,24 @@ if ( file_exists( $ag_prospection_file ) ) {
     require_once $ag_prospection_file;
 }
 
+// ── 1c8-bis. (restauré le 24/11) Cerveaux commerciaux du mode économe, perdus
+//    lors de la fusion du début novembre. Les trois sont SANS effet de bord
+//    (aucune tâche planifiée, aucun envoi automatique vers un prospect) :
+//    • ag-funnel : le tunnel qui APPREND (journalise chaque prospect et chaque
+//      vente) + écrans « Tunnel » et « Signaux du filon » (le seul indicateur
+//      qui dit si l'audit payant se transforme en abonnement) + Suivi des ventes.
+//      L'email « Envoyer l'offre » reste déclenché à la main (bouton admin).
+//    • ag-scoreur : trie la file de contact pour viser d'abord les meilleurs
+//      prospects (qualité, pas volume) via le filtre ag_closer_file.
+//    • ag-gardien : surveille la réputation d'envoi et alerte l'équipe en
+//      interne (Telegram) si ça se dégrade, pour ne pas brûler le domaine.
+foreach ( array( 'ag-funnel.php', 'ag-scoreur.php', 'ag-gardien.php' ) as $ag_brain_mod ) {
+	$ag_brain_path = get_stylesheet_directory() . '/inc/' . $ag_brain_mod;
+	if ( file_exists( $ag_brain_path ) ) {
+		require_once $ag_brain_path;
+	}
+}
+
 // ── Capture lead « Guide gratuit avocat » (entonnoir freemium .org → site mère)
 $ag_lead_avocat_file = get_stylesheet_directory() . '/inc/ag-lead-avocat.php';
 if ( file_exists( $ag_lead_avocat_file ) ) {
