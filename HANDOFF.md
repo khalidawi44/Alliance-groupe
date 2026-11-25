@@ -1,7 +1,9 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-11-23 — branche de travail : `claude/gallant-turing-axc6t2` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-11-25 — branche de travail : `claude/gallant-turing-qxlgcr` (tampon auto à chaque commit).
+
+> **⚠️ 25/11 : LES 2 AUDITS PAYANTS N'ONT PAS DE LIEN DE PAIEMENT.** Options `ag_tester_pay_url` (49 €) et `ag_tester_deep_pay_url` (290 €) vides en ligne. Fabrice doit coller 2 liens PayPal dans Réglages, Tester / Audit. En attendant, `inc/ag-mandat.php` envoie un email de confirmation au client et un email « A FAIRE » à Fabrice (détail : journal du 25/11 dans `CARTOGRAPHIE.md`).
 
 > **⚠️ 23/11 : 32 MODULES NON CHARGÉS, À DÉCIDER PAR FABRICE.** Depuis la fusion du début novembre (9a7e274), `functions.php` ne charge plus que 51 modules sur 80. Restauré le 23/11 : `inc/ag-mandat.php` (commande d'audit avec mandat signé, `/?ag_mandat=1&tier=expert`, et rendez-vous `/?ag_rdv=1`), branché sur `/tester-mon-site` (bouton « Commander · 290 € »). Restent éteints, entre autres : `ag-redirections` (avis d'accueil + carrousel des offres), `ag-funnel` (Signaux du filon), `ag-scoreur`, `ag-gardien`, `ag-ab`. Liste complète et méthode dans `CARTOGRAPHIE.md`, journal du 23/11. Ne pas tout rallumer sans son accord : certains relancent des tâches planifiées et des envois.
 

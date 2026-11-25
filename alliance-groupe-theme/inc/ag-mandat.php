@@ -83,10 +83,11 @@ if ( ! function_exists( 'ag_mandat_render' ) ) {
 			<h1><?php echo esc_html( $T['label'] ); ?></h1>
 			<div class="price"><?php echo esc_html( number_format_i18n( $price, 0 ) ); ?> € <span style="font-size:.9rem;color:#8a8a92;font-weight:400;">TTC</span></div>
 			<p class="desc"><?php echo esc_html( $T['desc'] ); ?></p>
-			<?php if ( $okp ) : ?><div class="mand" style="background:#0e1f13;border-color:#2e6a3f;color:#bfe6c9;">✅ <strong>Commande &amp; mandat enregistrés.</strong> Nous vous envoyons le <strong>lien de paiement sécurisé par email</strong> dans les plus brefs délais.</div><?php endif; ?>
+			<?php if ( $okp ) : ?><div class="mand" style="background:#0e1f13;border-color:#2e6a3f;color:#bfe6c9;">✅ <strong>Commande &amp; mandat enregistrés.</strong> Un email de confirmation vient de vous être envoyé. Vous recevez votre <strong>lien de paiement sécurisé par email</strong> aujourd'hui.</div><?php endif; ?>
 			<?php if ( 'email' === $err ) : ?><p class="err">Merci d'indiquer une adresse email valide et l'URL de votre site.</p><?php endif; ?>
 			<?php if ( 'mandat' === $err ) : ?><p class="err">Vous devez cocher l'autorisation (mandat) pour commander.</p><?php endif; ?>
 			<?php if ( 'nonce' === $err ) : ?><p class="err">Session expirée, réessayez.</p><?php endif; ?>
+			<?php if ( ! $okp ) : ?>
 			<form class="card" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="ag_mandat_order">
 				<input type="hidden" name="tier" value="<?php echo esc_attr( $T['kind'] ); ?>">
@@ -105,6 +106,7 @@ if ( ! function_exists( 'ag_mandat_render' ) ) {
 				<label class="chk"><input type="checkbox" name="cgv" value="1" required><span>J'accepte les <strong>conditions générales</strong> et je passe une <strong>commande ferme</strong> de <?php echo esc_html( number_format_i18n( $price, 0 ) ); ?> €.</span></label>
 				<button type="submit" class="cta"><?php echo $haspay ? '💳 Payer ' . esc_html( number_format_i18n( $price, 0 ) ) . ' € et commander' : '📩 Commander (' . esc_html( number_format_i18n( $price, 0 ) ) . ' €) et recevoir le lien de paiement'; ?></button>
 			</form>
+			<?php endif; ?>
 			<p class="leg">Paiement sécurisé. Facture envoyée par email. L'audit approfondi n'est jamais réalisé sans votre autorisation écrite.</p>
 		</div></body></html><?php
 	}
@@ -153,6 +155,40 @@ if ( ! function_exists( 'ag_mandat_order' ) ) {
 		if ( function_exists( 'ag_sms' ) )  ag_sms( '🛒 ' . $T['label'] . ' : ' . $nom . ' — ' . $site . ' (' . number_format_i18n( $price, 0 ) . ' €)' );
 
 		$pay = trim( (string) $T['pay'] );
+
+		// Accusé de réception immédiat au client : sans lui, une commande signée restait sans aucune trace
+		// tant que le lien de paiement n'était pas envoyé à la main. Avec lien : bouton pour payer ou reprendre.
+		$prix_txt = number_format_i18n( $price, 0 ) . ' €';
+		if ( function_exists( 'ag_email_wrap' ) ) {
+			$inner = '<p>Bonjour' . ( $nom ? ' ' . esc_html( $nom ) : '' ) . ',</p>'
+				. '<p>Votre commande est bien enregistrée, avec votre autorisation signée.</p>'
+				. '<p><strong>' . esc_html( $T['label'] ) . '</strong> pour ' . esc_html( $site ) . '<br>Montant : <strong>' . esc_html( $prix_txt ) . ' TTC</strong></p>';
+			if ( '' !== $pay ) {
+				$inner .= '<p>Si le paiement n\'est pas encore fait, vous pouvez le régler ici :</p>'
+					. ( function_exists( 'ag_email_button' ) ? ag_email_button( 'Payer ' . $prix_txt, $pay ) : '<p><a href="' . esc_url( $pay ) . '">Payer ' . esc_html( $prix_txt ) . '</a></p>' )
+					. '<p>L\'audit démarre dès réception du paiement.</p>';
+			} else {
+				$inner .= '<p>Vous recevez votre lien de paiement sécurisé par email aujourd\'hui. L\'audit démarre dès réception du paiement.</p>';
+			}
+			$inner .= '<p>Une question ? Répondez simplement à cet email.</p>';
+			wp_mail( $email, 'Votre commande : ' . $T['label'], ag_email_wrap( 'Commande enregistrée', $inner ), array( 'Content-Type: text/html; charset=UTF-8', 'From: Alliance Groupe <contact@alliancegroupe-inc.com>' ) );
+		}
+		// Sans lien de paiement réglé, la vente dépend d'un envoi à la main : email complet à Fabrice, prêt à traiter.
+		if ( '' === $pay ) {
+			$admin = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
+			$champ = ( 'expert' === $tier ) ? 'Lien de paiement Diagnostic Expert 24h' : 'Lien de paiement';
+			wp_mail(
+				$admin,
+				'A FAIRE : envoyer le lien de paiement (' . $prix_txt . ') à ' . $nom,
+				"Un client a signé le mandat et attend son lien de paiement.\n\n"
+				. "Offre : " . $T['label'] . " (" . $prix_txt . ")\nClient : $nom\nEmail : $email\nTéléphone : $phone\nSite : $site\n\n"
+				. "1) Envoie-lui maintenant une demande de paiement PayPal de " . $prix_txt . " à l'adresse $email.\n"
+				. "2) Pour que ce soit automatique la prochaine fois : colle un lien de paiement dans\n"
+				. admin_url( 'options-general.php?page=ag-tester' ) . "\nchamp « " . $champ . " ».\n",
+				array( 'Reply-To: ' . $email )
+			);
+		}
+
 		if ( '' !== $pay ) { wp_redirect( $pay ); exit; }
 		wp_safe_redirect( add_query_arg( 'ok', 'pending', $back ) ); exit;
 	}
