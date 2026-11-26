@@ -273,6 +273,19 @@ if ( file_exists( $ag_mandat_file ) ) {
     require_once $ag_mandat_file;
 }
 
+// ── 1c12 à 1c18. (restaurés le 26/11, sur accord) CHAÎNE COMMERCIALE AUTONOME.
+//    Perdus à la fusion 9a7e274. Sans le pilote, ni le Gardien, ni l'analyste, ni Max,
+//    ni le rapport du soir ne tournent : ils sont tous lancés par ag_auto_tick().
+//    Ordre d'origine conservé : pilote, tunnel, A/B, scoreur, gardien, rapport du soir,
+//    community manager.
+foreach ( array( 'ag-autopilot', 'ag-funnel', 'ag-ab', 'ag-scoreur', 'ag-gardien', 'ag-rapport-soir', 'ag-cm' ) as $ag_chaine_mod ) {
+    $ag_chaine_file = get_stylesheet_directory() . '/inc/' . $ag_chaine_mod . '.php';
+    if ( file_exists( $ag_chaine_file ) ) {
+        require_once $ag_chaine_file;
+    }
+}
+unset( $ag_chaine_mod, $ag_chaine_file );
+
 // ── 1c5e-ter. Pont « Audit approfondi » wp-admin ↔ Kali (file d'attente sécurisée)
 $ag_pentest_bridge_file = get_stylesheet_directory() . '/inc/ag-pentest-bridge.php';
 if ( file_exists( $ag_pentest_bridge_file ) ) {
