@@ -286,6 +286,14 @@ foreach ( array( 'ag-autopilot', 'ag-funnel', 'ag-ab', 'ag-scoreur', 'ag-gardien
 }
 unset( $ag_chaine_mod, $ag_chaine_file );
 
+// ── CHARGEUR DE SECOURS (26/11) : rallume TOUS les modules perdus à la fusion 9a7e274
+//    (liste complète dans inc/ag-modules.php). Appelé aussi depuis inc/ag-prospection.php :
+//    si ce functions.php est écrasé un jour, l'autre appel rallume tout. NE PAS RETIRER.
+$ag_modules_file = get_stylesheet_directory() . '/inc/ag-modules.php';
+if ( file_exists( $ag_modules_file ) ) {
+    require_once $ag_modules_file;
+}
+
 // ── 1c5e-ter. Pont « Audit approfondi » wp-admin ↔ Kali (file d'attente sécurisée)
 $ag_pentest_bridge_file = get_stylesheet_directory() . '/inc/ag-pentest-bridge.php';
 if ( file_exists( $ag_pentest_bridge_file ) ) {

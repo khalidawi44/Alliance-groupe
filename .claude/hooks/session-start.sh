@@ -34,6 +34,18 @@ echo "Rappel : sur Claude Code web, le conteneur est neuf a chaque session."
 echo "Seul ce qui est COMMITE + POUSSE survit. Pense a pousser avant de fermer."
 echo
 
+# --- Modules du theme : alerte immediate si l'un d'eux est eteint -------------
+if [ -f scripts/check-modules.sh ]; then
+	if ! MODS_OUT="$(bash scripts/check-modules.sh 2>&1)"; then
+		echo "## 🚨 MODULES ETEINTS : A RALLUMER AVANT TOUT AUTRE TRAVAIL (regle de Fabrice : toujours operationnel)"
+		echo "${MODS_OUT}"
+		echo
+	else
+		echo "## Modules du theme : ${MODS_OUT}"
+		echo
+	fi
+fi
+
 # --- Derniers commits ---------------------------------------------------------
 echo "## Derniers commits"
 git log --oneline -8 2>/dev/null || echo "(pas d'historique)"

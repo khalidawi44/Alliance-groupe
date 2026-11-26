@@ -4011,3 +4011,12 @@ add_action( 'admin_post_ag_amb_send_now', function () {
 	$ok = function_exists( 'ag_tg_send' ) && ag_tg_send( ag_tg_cfg( 'chat' ), ag_amb_message_today() );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'asent' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
 } );
+
+/* ── SECOND APPEL DU CHARGEUR DE SECOURS (voir inc/ag-modules.php). NE PAS RETIRER.
+ * Si functions.php perd un jour sa ligne (fusion ratée, ancienne version remise),
+ * les modules restent allumés grâce à cet appel. require_once : jamais de double
+ * chargement. */
+$ag_modules_secours = get_stylesheet_directory() . '/inc/ag-modules.php';
+if ( file_exists( $ag_modules_secours ) ) {
+	require_once $ag_modules_secours;
+}

@@ -34,6 +34,16 @@ if [[ -f scripts/stamp-handoff.sh ]]; then
     git add HANDOFF.md 2>/dev/null || true
 fi
 
+# --- Modules du theme : aucun ne doit s'eteindre (BLOQUANT) ---
+# Une fusion a deja eteint 49 modules en silence (novembre 2026). On refuse
+# tout commit qui retire un appel de chargement. Voir scripts/check-modules.sh.
+if [[ -f scripts/check-modules.sh ]]; then
+    bash scripts/check-modules.sh || {
+        echo "COMMIT REFUSE : un module du theme serait eteint (voir ci-dessus)." >&2
+        exit 1
+    }
+fi
+
 # Si le message de commit commence par "unlock-<slug>:" on autorise
 # (procedure exceptionnelle).
 if [[ -n "${COMMIT_MSG_FILE:-}" && -f "${COMMIT_MSG_FILE}" ]]; then
@@ -52,6 +62,23 @@ fi
 HOOK
 
 chmod +x "${HOOK_PATH}"
+
+# Meme controle sur les FUSIONS (le pre-commit ne tourne pas sur un merge) :
+# c'est une fusion qui avait eteint les modules.
+MERGE_HOOK_PATH="${REPO_ROOT}/.git/hooks/pre-merge-commit"
+cat > "${MERGE_HOOK_PATH}" <<'HOOK'
+#!/usr/bin/env bash
+# AG : refuse une fusion qui eteint un module du theme.
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "${REPO_ROOT}"
+if [[ -f scripts/check-modules.sh ]]; then
+    bash scripts/check-modules.sh || {
+        echo "FUSION REFUSEE : un module du theme serait eteint (voir ci-dessus)." >&2
+        exit 1
+    }
+fi
+HOOK
+chmod +x "${MERGE_HOOK_PATH}"
 
 echo "Installed: ${HOOK_PATH}"
 echo "Pre-commit hook execute maintenant scripts/check-all-locks.sh."

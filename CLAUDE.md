@@ -14,6 +14,7 @@ Règles de travail demandées par Fabrice, valables partout, toujours :
 4. **Textes propres** (skill `textes-propres-sans-ia`) : aucun tiret long `—`, aucune formule d'IA, aucune trace de Claude. Vaut pour tout ce qui est écrit POUR Fabrice (outils, site, docs, visuels).
 5. **Déploiement** : pousser sur la branche de travail ET sur `main` (le SYNC du site lit `main`). Toute MAJ d'`assistant-defi.html` = bumper le badge de version pour qu'il confirme qu'il a la bonne.
 6. **Clés/secrets** : jamais dans le code commité ni dans le navigateur. Côté serveur uniquement (constante wp-config ou option WP).
+7. **TOUJOURS OPÉRATIONNEL (règle du 26/11/2026)** : aucun module du thème ne doit s'éteindre. S'il s'en éteint un, on le rallume tout de suite, sans demander. Tous les modules passent par la liste de `alliance-groupe-theme/inc/ag-modules.php` (chargeur appelé depuis `functions.php` ET `inc/ag-prospection.php`, ne jamais retirer ces deux appels). Nouveau module = l'ajouter à cette liste. Contrôle : `bash scripts/check-modules.sh` (lancé au démarrage de session, bloque le commit et la fusion si un module est éteint). Après toute fusion touchant `functions.php`, relancer ce contrôle.
 
 ## Continuité entre conversations (IMPORTANT)
 - Sur Claude Code web, **chaque conversation démarre dans un conteneur neuf** : seul ce qui est **commité + poussé** survit.
