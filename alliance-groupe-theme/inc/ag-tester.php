@@ -346,7 +346,11 @@ if ( ! function_exists( 'ag_tester_order' ) ) {
 		if ( empty( $_POST['order_accept'] ) ) wp_die( 'Vous devez accepter la commande pour débloquer le rapport.' );
 
 		$nom   = sanitize_text_field( wp_unslash( $_POST['nom'] ?? ( $data['prenom'] ?? '' ) ) );
-		$email = $data['email'];
+		// Le test gratuit ne demande plus d'email : sans celui du formulaire de commande,
+		// la facture ne partait nulle part et le client restait injoignable.
+		$email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+		if ( ! is_email( $email ) ) $email = sanitize_email( (string) ( $data['email'] ?? '' ) );
+		if ( ! is_email( $email ) ) wp_die( 'Merci d\'indiquer une adresse email valide : la facture et le rapport y sont envoyés.', 'Email manquant', array( 'back_link' => true ) );
 		$url   = $data['audit']['url'] ?? '';
 		$price = (float) ag_tester_opt( 'price' );
 		$waive = ! empty( $_POST['waive'] );
@@ -370,13 +374,25 @@ if ( ! function_exists( 'ag_tester_order' ) ) {
 
 		// Débloque le rapport.
 		$data['unlocked']   = true;
+		$data['email']      = $email;
+		if ( empty( $data['prenom'] ) ) $data['prenom'] = $nom;
 		$data['invoice_no'] = $invoice_no;
 		$data['consent']    = $consent;
 		set_transient( 'ag_tester_' . $aid, $data, 60 * DAY_IN_SECONDS );
 
 		$base       = wp_get_referer() ?: home_url( '/tester-mon-site' );
 		$report_url = add_query_arg( array( 'rapport' => $aid ), $base );
-		$pay_url    = ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' );
+		$pay_real   = trim( (string) ag_tester_opt( 'pay_url' ) );
+		$pay_url    = $pay_real ?: home_url( '/contact' );
+
+		// Fiche CRM : un acheteur est le prospect le plus chaud, il doit apparaître dans le suivi.
+		if ( function_exists( 'ag_prospect_add_record' ) ) {
+			ag_prospect_add_record( array(
+				'name' => $nom ?: $email, 'email' => $email, 'phone' => (string) ( $data['phone'] ?? '' ), 'website' => $url,
+				'source' => 'commande-rapport', 'status' => 'interesse',
+				'notes' => 'A commandé le rapport complet (' . number_format_i18n( $price, 0 ) . ' €) le ' . current_time( 'd/m/Y H:i' ) . ', facture ' . $invoice_no,
+			) );
+		}
 
 		// Email : FACTURE + lien rapport complet + paiement.
 		if ( function_exists( 'ag_email_wrap' ) ) {
@@ -384,14 +400,41 @@ if ( ! function_exists( 'ag_tester_order' ) ) {
 			$inner .= '<p>Merci pour votre commande. Votre <strong>rapport d\'audit complet</strong> de ' . esc_html( $url ) . ' est débloqué :</p>';
 			$inner .= ag_email_button( 'Voir mon rapport complet →', $report_url );
 			$inner .= ag_tester_facture_html( $invoice_no, $nom, $email, $url, $price );
-			$inner .= '<p>Règlement :</p>' . ag_email_button( 'Payer ma facture (' . number_format_i18n( $price, 0 ) . ' €) →', $pay_url );
+			if ( '' !== $pay_real ) {
+				$inner .= '<p>Règlement :</p>' . ag_email_button( 'Payer ma facture (' . number_format_i18n( $price, 0 ) . ' €) →', $pay_real );
+			} else {
+				$inner .= '<p>Règlement : vous recevez votre lien de paiement sécurisé par email aujourd\'hui.</p>';
+			}
 			$inner .= '<p style="font-size:12px;color:#9a9aa5">Commande acceptée électroniquement le ' . esc_html( $consent['accepted_at'] ) . ' (IP ' . esc_html( $consent['ip'] ) . ').'
 				. ( $waive ? ' Vous avez demandé la fourniture immédiate et renoncé au délai de rétractation de 14 jours.' : '' ) . '</p>';
 			wp_mail(
 				$email,
 				'Facture ' . $invoice_no . ' + votre rapport d\'audit complet',
 				ag_email_wrap( 'Votre facture et votre rapport', $inner ),
-				array( 'Content-Type: text/html; charset=UTF-8' )
+				array( 'Content-Type: text/html; charset=UTF-8', 'From: Alliance Groupe <contact@alliancegroupe-inc.com>' )
+			);
+		}
+		// Email à Fabrice à chaque commande : coordonnées complètes, et marche à suivre si le lien de paiement manque.
+		$admin    = apply_filters( 'ag_calendar_notify_email', get_option( 'ag_calendar_notify_email', get_option( 'admin_email' ) ) );
+		if ( ! is_email( $admin ) ) $admin = get_option( 'admin_email' );
+		$prix_txt = number_format_i18n( $price, 0 ) . ' €';
+		if ( '' === $pay_real ) {
+			wp_mail(
+				$admin,
+				'A FAIRE : envoyer le lien de paiement (' . $prix_txt . ') à ' . $nom,
+				"Un client a commandé le rapport d'audit complet. Le rapport est déjà débloqué, il attend son lien de paiement.\n\n"
+				. "Client : $nom\nEmail : $email\nSite : $url\nFacture : $invoice_no ($prix_txt)\n\n"
+				. "1) Envoie-lui maintenant une demande de paiement PayPal de $prix_txt à l'adresse $email.\n"
+				. "2) Pour que ce soit automatique la prochaine fois : colle un lien de paiement dans\n"
+				. admin_url( 'options-general.php?page=ag-tester' ) . "\nchamp « Lien de paiement ».\n",
+				array( 'Reply-To: ' . $email )
+			);
+		} else {
+			wp_mail(
+				$admin,
+				'Commande rapport d\'audit (' . $prix_txt . ') : ' . $nom,
+				"Client : $nom\nEmail : $email\nSite : $url\nFacture : $invoice_no ($prix_txt)\n\nLe client a reçu sa facture et le bouton de paiement. Vérifie l'encaissement.\n",
+				array( 'Reply-To: ' . $email )
 			);
 		}
 		if ( function_exists( 'ag_push' ) ) {
@@ -709,6 +752,7 @@ if ( ! function_exists( 'ag_tester_render_teaser' ) ) {
 						<input type="hidden" name="aid" value="<?php echo esc_attr( $aid ); ?>">
 						<?php wp_nonce_field( 'ag_tester_order' ); ?>
 						<input type="text" name="nom" required placeholder="Nom et prénom" value="<?php echo esc_attr( $data['prenom'] ?? '' ); ?>" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
+						<input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="Votre email (facture et rapport)" value="<?php echo esc_attr( $data['email'] ?? '' ); ?>" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem;width:100%;box-sizing:border-box">
 						<label style="display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:rgba(255,255,255,.8);line-height:1.45">
 							<input type="checkbox" name="order_accept" value="1" required style="margin-top:3px">
 							<span>Je commande mon <strong>rapport d'audit complet</strong> de <?php echo esc_html( $a['url'] ?? '' ); ?> au prix de <strong><?php echo esc_html( number_format_i18n( $price, 0 ) ); ?> € TTC</strong>. Je reconnais que <strong>cette commande m'engage</strong> et que le paiement est dû. J'ai lu et j'accepte les <a href="<?php echo esc_url( home_url( '/cgv' ) ); ?>" target="_blank" style="color:#D4B45C">CGV</a>.</span>

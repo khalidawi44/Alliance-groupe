@@ -1,7 +1,9 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-11-25 — branche de travail : `claude/gallant-turing-qxlgcr` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-11-26 — branche de travail : `claude/gallant-turing-elhwob` (tampon auto à chaque commit).
+
+> **26/11 : la commande du rapport à 49 € (bloc sous le résultat du test gratuit) ne demandait pas d'email, donc aucune vente ne pouvait aboutir.** Corrigé dans `inc/ag-tester.php` (email obligatoire, fiche CRM, email à Fabrice). Faux « sites livrés » de `/tester-mon-site` remplacés par les 3 vrais. Détail : journal du 26/11 dans `CARTOGRAPHIE.md`.
 
 > **⚠️ 25/11 : LES 2 AUDITS PAYANTS N'ONT PAS DE LIEN DE PAIEMENT.** Options `ag_tester_pay_url` (49 €) et `ag_tester_deep_pay_url` (290 €) vides en ligne. Fabrice doit coller 2 liens PayPal dans Réglages, Tester / Audit. En attendant, `inc/ag-mandat.php` envoie un email de confirmation au client et un email « A FAIRE » à Fabrice (détail : journal du 25/11 dans `CARTOGRAPHIE.md`).
 

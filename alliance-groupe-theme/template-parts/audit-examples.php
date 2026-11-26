@@ -3,7 +3,8 @@
  * Exemples ANONYMISÉS — preuve sociale, regroupés en 2 catégories :
  *   • Sécurité  : résultats d'audits (failles trouvées, score)
  *   • Création  : sites réalisés (type, résultat)
- * Aucune donnée client réelle : noms d'entreprise MASQUÉS. Exemples illustratifs.
+ * Sécurité : vrais audits, noms de domaine masqués. Création : vrais sites livrés, nommés (publics sur /realisations).
+ * Aucun cas inventé (décision du 03/09).
  *
  * @package Alliance_Groupe_Theme
  */
@@ -38,30 +39,12 @@ if ( function_exists( 'ag_audit_hist_get' ) ) {
 		}
 	}
 }
-// Repli sur des exemples illustratifs si l'historique est vide.
-if ( empty( $ag_sec_ex ) ) {
-	$ag_sec_ex = array(
-		array( 'sec' => 'Cabinet d\'avocats', 'ville' => 'Bordeaux', 'score' => 38, 'type' => 'Approfondi',
-			'pts' => array( 'Versions de plugins exposées', 'xmlrpc ouvert (force brute)', 'En-têtes de sécurité absents' ) ),
-		array( 'sec' => 'E-commerce mode', 'ville' => 'Paris', 'score' => 29, 'type' => 'Expert',
-			'pts' => array( 'Sauvegarde téléchargeable', 'PHP en fin de vie', 'Listing de répertoires' ) ),
-		array( 'sec' => 'Restaurant', 'ville' => 'Lyon', 'score' => 54, 'type' => 'Léger',
-			'pts' => array( 'Pas de HTTPS strict', 'Version du CMS exposée' ) ),
-		array( 'sec' => 'Cabinet médical', 'ville' => 'Nantes', 'score' => 47, 'type' => 'Approfondi',
-			'pts' => array( 'Énumération du compte admin', 'Pingback actif (DDoS)', 'Certificat faible' ) ),
-		array( 'sec' => 'Artisan BTP', 'ville' => 'Marseille', 'score' => 61, 'type' => 'Léger',
-			'pts' => array( 'En-têtes de sécurité manquants', 'Données structurées absentes' ) ),
-		array( 'sec' => 'Agence immobilière', 'ville' => 'Toulouse', 'score' => 33, 'type' => 'Expert',
-			'pts' => array( 'Fichier de configuration accessible', 'Plugins obsolètes (CVE)', 'Pas de pare-feu applicatif' ) ),
-	);
-}
+// Historique vide : le bloc Sécurité ne s'affiche pas (décision du 03/09 : aucun cas inventé).
+// Création : uniquement les sites réellement livrés, visibles sur /realisations.
 $ag_crea_ex = array(
-	array( 'sec' => 'Restaurant', 'ville' => 'Lille', 'type' => 'Site vitrine', 'res' => 'Livré en 4 jours · réservation en ligne' ),
-	array( 'sec' => 'Coach sportif', 'ville' => 'Nantes', 'type' => 'Landing + RDV', 'res' => '+60 % de prises de rendez-vous' ),
-	array( 'sec' => 'Boutique déco', 'ville' => 'Bordeaux', 'type' => 'E-commerce', 'res' => '120 produits · paiement sécurisé' ),
-	array( 'sec' => 'Artisan menuisier', 'ville' => 'Rennes', 'type' => 'Vitrine + devis', 'res' => 'Demandes de devis x3' ),
-	array( 'sec' => 'Cabinet d\'avocats', 'ville' => 'Paris', 'type' => 'Sur-mesure', 'res' => 'Site institutionnel premium' ),
-	array( 'sec' => 'Association', 'ville' => 'Toulouse', 'type' => 'Vitrine + dons', 'res' => 'Site offert · dons en ligne' ),
+	array( 'sec' => 'Gwen Services', 'ville' => 'Aide à domicile · Nantes', 'type' => 'Site vitrine', 'res' => 'Livré en 5 jours · devis en 1 clic' ),
+	array( 'sec' => 'L.A Environnement', 'ville' => 'Élagage · Vertou', 'type' => 'Thème sur mesure', 'res' => 'Urgences 24 h/24 · référencement local' ),
+	array( 'sec' => 'Anna Photo', 'ville' => 'Photographe · Nantes', 'type' => 'Blog et portfolio', 'res' => '31 articles publiés · réservation en ligne' ),
 );
 $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F' : '#E10F1A' ); };
 ?>
@@ -69,11 +52,12 @@ $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F'
 	<div class="ag-ex__head">
 		<span class="ag-ex__tag">⟶ Exemples récents</span>
 		<h2 class="ag-ex__title">Nos <em>résultats</em> récents</h2>
-		<p class="ag-ex__lead">Des cas réels, présentés de façon <strong>anonyme</strong> par respect de la confidentialité de nos clients — côté <strong>sécurité</strong> (ce qu'on trouve) et <strong>création</strong> (ce qu'on livre).</p>
+		<p class="ag-ex__lead">Des cas réels. Côté <strong>sécurité</strong>, ce qu'on trouve, présenté de façon <strong>anonyme</strong> par respect de la confidentialité. Côté <strong>création</strong>, ce qu'on livre, visible en ligne.</p>
 	</div>
 
 	<!-- ───────── SÉCURITÉ ───────── -->
-	<div class="ag-ex__cat">Sécurité — audits récents</div>
+	<?php if ( ! empty( $ag_sec_ex ) ) : ?>
+	<div class="ag-ex__cat">Sécurité : audits récents</div>
 	<div class="ag-ex__grid">
 		<?php foreach ( array_slice( $ag_sec_ex, 0, 3 ) as $e ) : $c = $ag_col( $e['score'] ); ?>
 			<div class="ag-ex__card">
@@ -95,15 +79,17 @@ $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F'
 	</div>
 	<div class="ag-ex__cta"><a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-ex__btn">Tester mon site gratuitement →</a></div>
 
+	<?php endif; ?>
+
 	<!-- ───────── CRÉATION ───────── -->
-	<div class="ag-ex__cat" style="margin-top:48px">Création — sites livrés</div>
+	<div class="ag-ex__cat" style="margin-top:48px">Création : sites livrés</div>
 	<div class="ag-ex__grid">
 		<?php foreach ( array_slice( $ag_crea_ex, 0, 3 ) as $e ) : ?>
 			<div class="ag-ex__card ag-ex__card--crea">
 				<div class="ag-ex__top">
 					<div>
 						<div class="ag-ex__sec"><?php echo esc_html( $e['sec'] ); ?></div>
-						<div class="ag-ex__meta"><span class="ag-ex__masked">●●●●●●●●</span> · <?php echo esc_html( $e['ville'] ); ?></div>
+						<div class="ag-ex__meta"><?php echo esc_html( $e['ville'] ); ?></div>
 					</div>
 					<div class="ag-ex__badge ag-ex__badge--crea"><?php echo esc_html( $e['type'] ); ?></div>
 				</div>
@@ -112,7 +98,7 @@ $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F'
 		<?php endforeach; ?>
 	</div>
 	<div class="ag-ex__cta">
-		<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-ex__btn ag-ex__btn--crea">Voir les offres de création →</a>
+		<a href="<?php echo esc_url( home_url( '/realisations' ) ); ?>" class="ag-ex__btn ag-ex__btn--crea">Voir ces sites en ligne →</a>
 		<span class="ag-ex__note">Gratuit pour l'audit · devis gratuit pour la création</span>
 	</div>
 </section>
