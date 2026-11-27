@@ -2343,17 +2343,27 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 			if ( ! is_array( $res ) || isset( $res['error'] ) ) continue;
 			foreach ( $res as $r ) {
 				if ( empty( $r['name'] ) ) continue;
+				// FILON SÉCURITÉ/CONFORMITÉ : on ne garde que les entreprises AVEC un vrai
+				// site. Ce sont les SEULES joignables par email (l'enrichissement trouve
+				// l'email en lisant leur site) ET les seules concernées par l'offre (il faut
+				// un site existant à sécuriser/mettre en conformité). Les sans-site
+				// remplissaient le CRM (2500+) sans jamais devenir démarchables → machine à
+				// vide. Filtrable (ag_chasse_exige_site) si un jour on relance un canal
+				// téléphone/vocal pour les sans-site.
+				if ( apply_filters( 'ag_chasse_exige_site', true )
+					&& function_exists( 'ag_site_kind' )
+					&& 'real' !== ag_site_kind( $r['website'] ?? '' )[0] ) { $nosite++; continue; }
 				$ok = ag_prospect_add_record( array(
 					'name' => $r['name'], 'type' => $r['type'] ?? ( $s['q'] ?? '' ), 'city' => $s['city'] ?? '',
 					'phone' => $r['phone'] ?? '', 'phone_intl' => $r['phone_intl'] ?? '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '', 'maps_uri' => $r['maps_uri'] ?? '',
 					'rating' => $r['rating'] ?? 0, 'reviews' => $r['reviews'] ?? 0, 'source' => 'robot',
 				) );
-				if ( $ok ) { $added++; if ( 'real' !== ag_site_kind( $r['website'] ?? '' )[0] ) $nosite++; }
+				if ( $ok ) { $added++; }
 			}
 		}
 		remove_action( 'ag_prospect_added', $collector );
 		update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => $added ) );
-		if ( $added ) ag_activity_log( '🤖 Robot : ' . (int) $added . ' nouveau(x) prospect(s) trouvé(s)' );
+		if ( $added || $nosite ) ag_activity_log( '🤖 Robot : ' . (int) $added . ' nouveau(x) prospect(s) avec site' . ( $nosite ? ' (+ ' . (int) $nosite . ' sans site ignorés, hors filon)' : '' ) );
 
 		// Notifie chaque ambassadeur des nouveaux prospects de SA zone (auto, mains-libres).
 		$tg_lines = '';

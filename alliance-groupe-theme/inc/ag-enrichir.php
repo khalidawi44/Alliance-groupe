@@ -207,6 +207,10 @@ if ( ! function_exists( 'ag_enrich_a_faire' ) ) {
 	function ag_enrich_a_faire( $p ) {
 		if ( ! empty( $p['closer_stop'] ) ) { return false; }
 		if ( in_array( (string) ( $p['status'] ?? '' ), array( 'client', 'ne_pas_contacter', 'refus' ), true ) ) { return false; }
+		// DEAD-END : sans site ET sans email, l'enrichissement est impuissant (ni site à
+		// lire pour trouver l'email/faire l'audit, ni email pour démarcher). On ne rouvre
+		// plus ces fiches chaque tour → fini la machine à vide sur les ~2500 sans-site.
+		if ( '' === trim( (string) ( $p['website'] ?? '' ) ) && '' === trim( (string) ( $p['email'] ?? '' ) ) ) { return false; }
 		$sans_email = '' === trim( (string) ( $p['email'] ?? '' ) );
 		$sans_audit = 0 === (int) ( $p['audit_ts'] ?? 0 );
 		$jamais_vue = 0 === (int) ( $p['enrich_ts'] ?? 0 );
