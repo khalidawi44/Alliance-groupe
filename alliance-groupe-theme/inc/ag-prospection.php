@@ -2324,7 +2324,7 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 		$cap = (int) get_option( 'ag_places_cap', 1000 );
 		$ck  = 'ag_places_calls_' . gmdate( 'Ym' );
 		if ( $cap > 0 && (int) get_option( $ck, 0 ) >= $cap ) { update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => 0, 'capped' => 1 ) ); return; }
-		$added = 0; $nosite = 0;
+		$added = 0; $vocal = 0; $drop = 0;
 		// Compte les nouveaux prospects par ambassadeur (pour les prévenir).
 		$by_owner = array();
 		$collector = function ( $rec ) use ( &$by_owner ) {
@@ -2343,27 +2343,28 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 			if ( ! is_array( $res ) || isset( $res['error'] ) ) continue;
 			foreach ( $res as $r ) {
 				if ( empty( $r['name'] ) ) continue;
-				// FILON SÉCURITÉ/CONFORMITÉ : on ne garde que les entreprises AVEC un vrai
-				// site. Ce sont les SEULES joignables par email (l'enrichissement trouve
-				// l'email en lisant leur site) ET les seules concernées par l'offre (il faut
-				// un site existant à sécuriser/mettre en conformité). Les sans-site
-				// remplissaient le CRM (2500+) sans jamais devenir démarchables → machine à
-				// vide. Filtrable (ag_chasse_exige_site) si un jour on relance un canal
-				// téléphone/vocal pour les sans-site.
-				if ( apply_filters( 'ag_chasse_exige_site', true )
-					&& function_exists( 'ag_site_kind' )
-					&& 'real' !== ag_site_kind( $r['website'] ?? '' )[0] ) { $nosite++; continue; }
+				// 3 CIBLES, 3 CANAUX (on ne jette personne, on ROUTE) :
+				//  · AVEC site → canal EMAIL (Hugo) : angle sécurité/conformité ou refonte.
+				//    L'enrichissement y trouve l'email en lisant le site.
+				//  · SANS site MAIS avec téléphone → canal VOCAL (robot d'appel) : angle
+				//    création de site. Pas d'email possible, mais joignable par appel.
+				//  · Sans site ni téléphone → inexploitable : on ne garde pas (bruit pur).
+				// Filtre ag_chasse_exige_site (défaut OFF) : si true, ne garde que les sites.
+				$a_site = function_exists( 'ag_site_kind' ) && 'real' === ag_site_kind( $r['website'] ?? '' )[0];
+				$a_tel  = '' !== trim( (string) ( $r['phone'] ?? '' ) ) || '' !== trim( (string) ( $r['phone_intl'] ?? '' ) );
+				if ( ! $a_site && ! $a_tel ) { $drop++; continue; } // ni site ni téléphone = injoignable
+				if ( ! $a_site && apply_filters( 'ag_chasse_exige_site', false ) ) { $drop++; continue; }
 				$ok = ag_prospect_add_record( array(
 					'name' => $r['name'], 'type' => $r['type'] ?? ( $s['q'] ?? '' ), 'city' => $s['city'] ?? '',
 					'phone' => $r['phone'] ?? '', 'phone_intl' => $r['phone_intl'] ?? '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '', 'maps_uri' => $r['maps_uri'] ?? '',
 					'rating' => $r['rating'] ?? 0, 'reviews' => $r['reviews'] ?? 0, 'source' => 'robot',
 				) );
-				if ( $ok ) { $added++; }
+				if ( $ok ) { $added++; if ( ! $a_site ) { $vocal++; } }
 			}
 		}
 		remove_action( 'ag_prospect_added', $collector );
 		update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => $added ) );
-		if ( $added || $nosite ) ag_activity_log( '🤖 Robot : ' . (int) $added . ' nouveau(x) prospect(s) avec site' . ( $nosite ? ' (+ ' . (int) $nosite . ' sans site ignorés, hors filon)' : '' ) );
+		if ( $added || $drop ) ag_activity_log( '🤖 Robot : ' . (int) $added . ' prospect(s) — ' . (int) ( $added - $vocal ) . ' avec site (email/sécu·refonte) + ' . (int) $vocal . ' sans site avec tél (vocal/création)' . ( $drop ? ' ; ' . (int) $drop . ' injoignables ignorés' : '' ) );
 
 		// Notifie chaque ambassadeur des nouveaux prospects de SA zone (auto, mains-libres).
 		$tg_lines = '';
