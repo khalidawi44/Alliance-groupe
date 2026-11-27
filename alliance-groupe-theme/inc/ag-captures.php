@@ -106,22 +106,42 @@ if ( ! function_exists( 'ag_prospect_upsert' ) ) {
 
 if ( ! function_exists( 'ag_contact_form_handler' ) ) {
 	function ag_contact_form_handler() {
-		if ( ! isset( $_POST['ag_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['ag_nonce'] ), 'ag_contact_nonce' ) ) {
-			wp_safe_redirect( home_url( '/contact?err=1' ) ); exit;
+		$retour = home_url( '/contact/' );
+
+		/* Pot de miel : un champ invisible que seul un robot remplit. On lui
+		   répond « envoyé » sans rien enregistrer. */
+		if ( ! empty( $_POST['ag_confirm_x'] ) ) {
+			wp_safe_redirect( $retour . '?envoye=1#ag-contact-retour' ); exit;
 		}
+
+		/* Le jeton n'est plus bloquant : une page Contact servie depuis un cache
+		   garde un jeton périmé, et le message du visiteur partait dans le vide
+		   sans qu'il le sache. Un message de contact vaut plus qu'un jeton. La
+		   protection repose sur le pot de miel et sur la limite par adresse IP. */
 		$name    = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
 		$email   = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+		$phone   = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
 		$service = sanitize_text_field( wp_unslash( $_POST['service'] ?? '' ) );
 		$message = sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) );
 
-		if ( '' === $name || ! is_email( $email ) ) {
-			wp_safe_redirect( home_url( '/contact?err=1' ) ); exit;
+		if ( '' === $name || ! is_email( $email ) || '' === trim( $message ) ) {
+			wp_safe_redirect( $retour . '?err=1#ag-contact-retour' ); exit;
 		}
+
+		/* Limite : 5 messages par heure et par adresse IP. */
+		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$cle = 'ag_ct_' . md5( $ip );
+		$nb  = (int) get_transient( $cle );
+		if ( $nb >= 5 ) {
+			wp_safe_redirect( $retour . '?err=2#ag-contact-retour' ); exit;
+		}
+		set_transient( $cle, $nb + 1, HOUR_IN_SECONDS );
 
 		// 1) Le lead entre dans le CRM, chaud (il a écrit de lui-même).
 		ag_prospect_upsert( array(
 			'name'   => $name,
 			'email'  => $email,
+			'phone'  => $phone,
 			'source' => 'contact',
 			'notes'  => 'Formulaire contact' . ( $service ? ' (' . $service . ')' : '' ) . ' : ' . $message,
 		), true );
@@ -129,14 +149,14 @@ if ( ! function_exists( 'ag_contact_form_handler' ) ) {
 		// 2) La maison est prévenue là où arrivent toutes ses alertes.
 		$to   = apply_filters( 'ag_calendar_notify_email', get_option( 'ag_calendar_email', get_option( 'admin_email' ) ) );
 		$body = "Nouveau message depuis la page Contact\n\n"
-			. "Nom : $name\nEmail : $email\n" . ( $service ? "Service : $service\n" : '' )
+			. "Nom : $name\nEmail : $email\n" . ( $phone ? "Téléphone : $phone\n" : '' ) . ( $service ? "Service : $service\n" : '' )
 			. "\nMessage :\n$message\n";
 		wp_mail( $to, '✉️ Contact : ' . $name, $body, array( 'Reply-To: ' . $email ) );
 		if ( function_exists( 'ag_push' ) ) {
-			ag_push( '✉️ Message de contact', $name . ' — ' . mb_substr( $message, 0, 120 ) );
+			ag_push( '✉️ Message de contact', $name . ( $phone ? ' (' . $phone . ')' : '' ) . ' : ' . mb_substr( $message, 0, 120 ) );
 		}
 
-		wp_safe_redirect( home_url( '/contact?envoye=1' ) );
+		wp_safe_redirect( $retour . '?envoye=1#ag-contact-retour' );
 		exit;
 	}
 	add_action( 'admin_post_ag_contact_form', 'ag_contact_form_handler' );

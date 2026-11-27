@@ -1,7 +1,9 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-11-26 — branche de travail : `claude/gallant-turing-axc6t2` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-11-27 — branche de travail : `claude/gallant-turing-z4syf2` (tampon auto à chaque commit).
+
+> **27/11 : la page Contact ne confirmait rien après l'envoi et perdait le message si le jeton était périmé.** Corrigé dans `templates/page-contact.php` et `inc/ag-captures.php` (confirmation, erreur visible, téléphone facultatif, anti-robot, plus de jeton bloquant). À constater en ligne après la SYNC. Les 2 liens PayPal des audits manquent toujours. Détail : journal du 27/11 dans `CARTOGRAPHIE.md`.
 
 > **26/11 : la commande du rapport à 49 € (bloc sous le résultat du test gratuit) ne demandait pas d'email, donc aucune vente ne pouvait aboutir.** Corrigé dans `inc/ag-tester.php` (email obligatoire, fiche CRM, email à Fabrice). Faux « sites livrés » de `/tester-mon-site` remplacés par les 3 vrais. Détail : journal du 26/11 dans `CARTOGRAPHIE.md`.
 
