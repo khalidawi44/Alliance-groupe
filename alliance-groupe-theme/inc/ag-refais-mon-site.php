@@ -55,7 +55,7 @@ function ag_refais_generate() {
 	 */
 	if ( function_exists( 'set_time_limit' ) ) { @set_time_limit( 120 ); }
 
-	$url  = esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) );
+	$url  = function_exists( 'ag_site_url_clean' ) ? ag_site_url_clean( wp_unslash( $_POST['url'] ?? '' ) ) : esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) );
 	$page = ag_ia_fetch_page( $url, 3500 );
 	if ( is_wp_error( $page ) ) {
 		wp_send_json_error( array( 'msg' => $page->get_error_message() ) );
@@ -285,7 +285,7 @@ function ag_refais_render() {
 		<?php endif; ?>
 
 		<form class="agr-form" id="agr-form" <?php echo $ready ? '' : 'style="opacity:.5;pointer-events:none"'; ?>>
-			<input type="url" id="agr-url" placeholder="https://mon-site-actuel.fr" required>
+			<input type="text" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="url" id="agr-url" placeholder="mon-site-actuel.fr" required>
 			<button type="submit" class="agr-btn" id="agr-go">Moderniser</button>
 		</form>
 		<p class="agr-note">On ne modifie jamais ton vrai site. C'est une simulation.</p>
@@ -320,8 +320,10 @@ function ag_refais_render() {
 		function tick(){ st.textContent=steps[si%steps.length]; si++; }
 		form.addEventListener('submit',function(e){
 			e.preventDefault();
-			var url=document.getElementById('agr-url').value.trim();
+			var url=document.getElementById('agr-url').value.replace(/\s+/g,'');
 			if(!url) return;
+			if(!/^https?:\/\//i.test(url)){ url='https://'+url.replace(/^[\/:]+/,''); }
+			document.getElementById('agr-url').value=url;
 			go.disabled=true; cmp.style.display='none'; lead.style.display='none';
 			si=0; tick(); tmr=setInterval(tick,2200);
 			var fd=new FormData(); fd.append('action','ag_refais_generate'); fd.append('_n',N); fd.append('url',url);

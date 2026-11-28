@@ -1,7 +1,9 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-11-27 — branche de travail : `claude/gallant-turing-z4syf2` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-11-28 — branche de travail : `claude/gallant-turing-qd5kc4` (tampon auto à chaque commit).
+
+> **28/11 : les 5 champs « adresse de votre site » (test gratuit, audit SEO, maquette, commande d'audit, accueil) refusaient « monsite.fr » sans https://.** Corrigé (`ag_site_url_clean()` dans `inc/ag-audit-seo.php`), et le jeton périmé ne donne plus de page blanche sur `/tester-mon-site` et `/audit-seo`. À constater en ligne après la SYNC. Les 2 liens PayPal des audits manquent toujours. 15 demandes de fusion en brouillon (201 à 215) à trier. Détail : journal du 28/11 dans `CARTOGRAPHIE.md`.
 
 > **27/11 : la page Contact ne confirmait rien après l'envoi et perdait le message si le jeton était périmé.** Corrigé dans `templates/page-contact.php` et `inc/ag-captures.php` (confirmation, erreur visible, téléphone facultatif, anti-robot, plus de jeton bloquant). À constater en ligne après la SYNC. Les 2 liens PayPal des audits manquent toujours. Détail : journal du 27/11 dans `CARTOGRAPHIE.md`.
 

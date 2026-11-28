@@ -93,7 +93,7 @@ if ( ! function_exists( 'ag_mandat_render' ) ) {
 				<input type="hidden" name="tier" value="<?php echo esc_attr( $T['kind'] ); ?>">
 				<input type="hidden" name="_n" value="<?php echo esc_attr( wp_create_nonce( 'ag_mandat' ) ); ?>">
 				<label class="f">Adresse de votre site *</label>
-				<input type="url" name="site" required placeholder="https://votresite.fr" value="<?php echo esc_attr( $site ); ?>">
+				<input type="text" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="url" name="site" required placeholder="votresite.fr" value="<?php echo esc_attr( $site ); ?>">
 				<label class="f">Votre nom / raison sociale *</label>
 				<input type="text" name="nom" required placeholder="Nom ou entreprise">
 				<label class="f">Email *</label>
@@ -118,7 +118,7 @@ add_action( 'admin_post_ag_mandat_order', 'ag_mandat_order' );
 if ( ! function_exists( 'ag_mandat_order' ) ) {
 	function ag_mandat_order() {
 		$tier = ( ( $_POST['tier'] ?? '' ) === 'expert' ) ? 'expert' : 'deep';
-		$site = isset( $_POST['site'] ) ? esc_url_raw( wp_unslash( $_POST['site'] ) ) : '';
+		$site = isset( $_POST['site'] ) ? ( function_exists( 'ag_site_url_clean' ) ? ag_site_url_clean( wp_unslash( $_POST['site'] ) ) : esc_url_raw( wp_unslash( $_POST['site'] ) ) ) : '';
 		$back = add_query_arg( array( 'ag_mandat' => 1, 'tier' => $tier, 'site' => rawurlencode( $site ) ), home_url( '/' ) );
 		if ( ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_mandat' ) ) { wp_safe_redirect( add_query_arg( 'err', 'nonce', $back ) ); exit; }
 		$email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );

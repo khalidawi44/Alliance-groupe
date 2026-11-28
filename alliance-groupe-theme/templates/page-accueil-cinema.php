@@ -866,7 +866,7 @@ document.documentElement.classList.add('js-cine');
       <p class="lion__lead">Colle l'adresse de ton site actuel. Notre IA le lit et te montre&nbsp;<strong>tout de suite</strong> &agrave; quoi il pourrait ressembler, modernis&eacute;. Gratuit, sans inscription.</p>
 
       <form class="lion__form" id="agrHomeForm"<?php echo $agr_ready ? '' : ' style="opacity:.45;pointer-events:none"'; ?>>
-        <input type="url" id="agrHomeUrl" placeholder="https://mon-site-actuel.fr" autocomplete="url" required>
+        <input type="text" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="url" id="agrHomeUrl" placeholder="mon-site-actuel.fr" required>
         <button type="submit" class="btn" id="agrHomeGo">Moderniser</button>
       </form>
 
@@ -1099,8 +1099,10 @@ document.documentElement.classList.add('js-cine');
 
     form.addEventListener("submit", function(e){
       e.preventDefault();
-      var v = url.value.trim();
+      var v = url.value.replace(/\s+/g, "");
       if (!v) return;
+      if (!/^https?:\/\//i.test(v)) { v = "https://" + v.replace(/^[\/:]+/, ""); }
+      url.value = v;
       go.disabled = true; out.hidden = true;
       si = 0; tick(); tmr = setInterval(tick, 2200);
 

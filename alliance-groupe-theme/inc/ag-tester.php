@@ -256,15 +256,22 @@ if ( ! function_exists( 'ag_quicktest' ) ) {
 }
 if ( ! function_exists( 'ag_tester_run' ) ) {
 	function ag_tester_run() {
-		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'ag_tester' ) ) wp_die( 'Lien expiré.' );
-		if ( ! empty( $_POST['hp_field'] ) ) wp_die( 'Spam détecté.' );
+		$retour = home_url( '/tester-mon-site/' );
+		/* Pot de miel : seul un robot remplit ce champ invisible. */
+		if ( ! empty( $_POST['hp_field'] ) ) { wp_safe_redirect( $retour ); exit; }
+		/* Le jeton n'est plus bloquant : page servie depuis un cache ou onglet
+		   resté ouvert = jeton périmé, et le visiteur tombait sur une page blanche
+		   « Lien expiré » au lieu de son diagnostic. Protection : pot de miel +
+		   limite par adresse IP. */
+		if ( function_exists( 'ag_form_ip_limit' ) && ag_form_ip_limit( 'tester', 12 ) ) { wp_safe_redirect( $retour . '?err=limite#ag-tester-form' ); exit; }
 
 		// URL SEULE : l'email/le prénom ne sont plus demandés ici (optionnels, hérités si fournis).
-		$url    = esc_url_raw( wp_unslash( $_POST['site_url'] ?? '' ) );
+		// « monsite.fr » tapé sans https:// est accepté et complété.
+		$url    = function_exists( 'ag_site_url_clean' ) ? ag_site_url_clean( wp_unslash( $_POST['site_url'] ?? '' ) ) : esc_url_raw( wp_unslash( $_POST['site_url'] ?? '' ) );
 		$email  = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
 		$prenom = sanitize_text_field( wp_unslash( $_POST['prenom'] ?? '' ) );
 		$tel    = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
-		if ( ! $url ) wp_die( 'Merci d\'indiquer l\'adresse de votre site.' );
+		if ( ! $url ) { wp_safe_redirect( $retour . '?err=url#ag-tester-form' ); exit; }
 
 		$audit = function_exists( 'ag_audit_run' ) ? ag_audit_run( $url ) : array( 'url' => $url, 'checks' => array(), 'score' => 0, 'ts' => time() );
 		$aid   = wp_hash( $url . '|' . microtime() );
@@ -635,11 +642,20 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 				<span style="display:inline-block;padding:6px 14px;background:rgba(243,122,31,.15);border:1px solid rgba(243,122,31,.5);border-radius:999px;color:#F3D27A;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px">🔍 Diagnostic gratuit · sans engagement</span>
 				<h1 style="font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;margin:0 0 14px">Testez la <em style="background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic">sécurité</em> de votre site</h1>
 				<p style="color:rgba(255,255,255,.78);font-size:1.05rem;line-height:1.6;margin:0 0 32px">En 30 secondes : score global, nombre de failles détectées, et où vous en êtes vraiment. Diagnostic non-intrusif, avec votre autorisation.</p>
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px">
+				<form id="ag-tester-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px;scroll-margin-top:110px">
 					<input type="hidden" name="action" value="ag_tester_run">
+					<?php
+					$ag_t_err = isset( $_GET['err'] ) ? sanitize_key( wp_unslash( $_GET['err'] ) ) : '';
+					$ag_t_txt = array(
+						'url'    => 'Nous n\'avons pas reconnu l\'adresse de votre site. Écrivez-la simplement, par exemple : monsite.fr',
+						'limite' => 'Vous avez lancé plusieurs tests à la suite. Réessayez dans une heure, ou appelez le 07.44.82.95.16.',
+					);
+					if ( $ag_t_err && isset( $ag_t_txt[ $ag_t_err ] ) ) : ?>
+					<p role="alert" style="margin:0;padding:14px 16px;background:rgba(192,57,43,.16);border:1px solid #e0705f;border-radius:10px;color:#ffd9d2;font-size:.95rem;line-height:1.5"><?php echo esc_html( $ag_t_txt[ $ag_t_err ] ); ?></p>
+					<?php endif; ?>
 					<?php wp_nonce_field( 'ag_tester' ); ?>
 					<input type="text" name="hp_field" value="" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
-					<input type="url" name="site_url" required autofocus placeholder="https://monsite.fr" style="<?php echo $in; // phpcs:ignore ?>">
+					<input type="text" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="url" name="site_url" required autofocus placeholder="monsite.fr" style="<?php echo $in; // phpcs:ignore ?>">
 					<button type="submit" style="margin-top:6px;padding:18px 36px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;border:none;border-radius:999px;font-size:1.05rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 32px rgba(243,122,31,.35)">🔍 Analyser mon site gratuitement →</button>
 					<p style="color:rgba(255,255,255,.5);font-size:.8rem;text-align:center;margin:12px 0 0">Diagnostic <strong style="color:rgba(255,255,255,.7)">non-intrusif</strong> : on lit uniquement vos pages publiques (comme un visiteur). Résultat immédiat, sans inscription.</p>
 				</form>

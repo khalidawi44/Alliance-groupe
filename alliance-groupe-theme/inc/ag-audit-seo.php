@@ -935,20 +935,63 @@ if ( ! function_exists( 'ag_audit_run_deep' ) ) {
 /* ---------------------------------------------------------------------------
  * Handler de soumission
  * ------------------------------------------------------------------------- */
+if ( ! function_exists( 'ag_site_url_clean' ) ) {
+	/**
+	 * Nettoie une adresse de site tapée par un visiteur. La plupart des gens
+	 * écrivent « monsite.fr » ou « www.monsite.fr », sans https:// : on l'ajoute
+	 * nous-mêmes au lieu de refuser la saisie. Retourne '' si ce n'est pas une
+	 * adresse de site plausible.
+	 */
+	function ag_site_url_clean( $raw ) {
+		$v = trim( (string) $raw );
+		$v = preg_replace( '/\s+/', '', $v );
+		if ( '' === $v ) return '';
+		if ( ! preg_match( '#^https?://#i', $v ) ) {
+			$v = 'https://' . ltrim( $v, '/:' );
+		}
+		$v    = esc_url_raw( $v, array( 'http', 'https' ) );
+		$host = $v ? (string) wp_parse_url( $v, PHP_URL_HOST ) : '';
+		if ( '' === $host || false === strpos( $host, '.' ) ) return '';
+		return $v;
+	}
+}
+if ( ! function_exists( 'ag_form_ip_limit' ) ) {
+	/** Vrai si cette adresse IP a dépassé $max envois dans l'heure pour ce formulaire. */
+	function ag_form_ip_limit( $form, $max ) {
+		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$cle = 'ag_fl_' . sanitize_key( $form ) . '_' . md5( $ip );
+		$nb  = (int) get_transient( $cle );
+		if ( $nb >= (int) $max ) return true;
+		set_transient( $cle, $nb + 1, HOUR_IN_SECONDS );
+		return false;
+	}
+}
 add_action( 'admin_post_nopriv_ag_audit_request', 'ag_audit_handle' );
 add_action( 'admin_post_ag_audit_request', 'ag_audit_handle' );
 if ( ! function_exists( 'ag_audit_handle' ) ) {
 	function ag_audit_handle() {
-		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'ag_audit' ) ) wp_die( 'Lien expiré.' );
-		// Honeypot anti-spam
-		if ( ! empty( $_POST['hp_field'] ) ) wp_die( 'Spam détecté.' );
+		$retour = home_url( '/audit-seo/' );
+		/* Pot de miel : seul un robot remplit ce champ invisible. */
+		if ( ! empty( $_POST['hp_field'] ) ) { wp_safe_redirect( $retour ); exit; }
+		/* Le jeton n'est plus bloquant : une page servie depuis un cache, ou un
+		   onglet resté ouvert, garde un jeton périmé et le visiteur tombait sur
+		   une page blanche « Lien expiré ». La protection repose sur le pot de
+		   miel et sur la limite par adresse IP. */
+		if ( ag_form_ip_limit( 'audit', 8 ) ) { wp_safe_redirect( $retour . '?err=limite#ag-audit-form' ); exit; }
 
-		$url    = esc_url_raw( wp_unslash( $_POST['site_url'] ?? '' ) );
+		$url    = ag_site_url_clean( wp_unslash( $_POST['site_url'] ?? '' ) );
 		$email  = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
 		$prenom = sanitize_text_field( wp_unslash( $_POST['prenom'] ?? '' ) );
 		$tel    = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
 
-		if ( ! $url || ! is_email( $email ) ) wp_die( 'URL ou email invalide.' );
+		if ( ! $url || ! is_email( $email ) ) {
+			wp_safe_redirect( add_query_arg( array(
+				'err'    => $url ? 'email' : 'url',
+				'url'    => rawurlencode( $url ),
+				'prenom' => rawurlencode( $prenom ),
+			), $retour ) . '#ag-audit-form' );
+			exit;
+		}
 
 		// Sauvegarde du lead dans le CRM Prospection (si dispo)
 		if ( function_exists( 'ag_prospect_add_record' ) ) {
@@ -974,7 +1017,7 @@ if ( ! function_exists( 'ag_audit_handle' ) ) {
 		set_transient( 'ag_audit_' . $aid, array( 'audit' => $audit, 'email' => $email, 'prenom' => $prenom ), 7 * DAY_IN_SECONDS );
 
 		// Email au prospect avec le lien du rapport
-		$report_url = add_query_arg( array( 'aid' => $aid ), wp_get_referer() ?: home_url( '/audit-seo' ) );
+		$report_url = add_query_arg( array( 'aid' => $aid ), $retour );
 		$a11y_line = isset( $audit['a11y']['score'] ) ? "\nScore d'accessibilité (RGAA) : " . (int) $audit['a11y']['score'] . " / 100." : '';
 		$subject = 'Votre audit Alliance Groupe — score ' . $audit['score'] . ' / 100';
 		$body    = "Bonjour " . ( $prenom ?: '' ) . ",\n\nVotre audit pour " . $url . " est prêt.\n\nScore global : " . $audit['score'] . " / 100." . $a11y_line . "\n\nConsultez le rapport complet ici :\n" . $report_url . "\n\nVous pouvez l'imprimer ou l'enregistrer en PDF (Ctrl+P).\n\nUne question ? Répondez à ce mail.\n\nAlliance Groupe\n";
@@ -1008,9 +1051,15 @@ if ( ! function_exists( 'ag_audit_render_form' ) ) {
 		   remplit l'URL, ?prenom=... le prenom. Le prospect n'a plus qu'a
 		   laisser son email pour voir son rapport — le lead est capture. */
 		$pre_url = '';
-		if ( isset( $_GET['url'] ) )        { $pre_url = esc_url_raw( wp_unslash( $_GET['url'] ) ); }
-		elseif ( isset( $_GET['site'] ) )   { $pre_url = esc_url_raw( wp_unslash( $_GET['site'] ) ); }
-		$pre_prenom = isset( $_GET['prenom'] ) ? sanitize_text_field( wp_unslash( $_GET['prenom'] ) ) : '';
+		if ( isset( $_GET['url'] ) )        { $pre_url = ag_site_url_clean( rawurldecode( wp_unslash( $_GET['url'] ) ) ); }
+		elseif ( isset( $_GET['site'] ) )   { $pre_url = ag_site_url_clean( rawurldecode( wp_unslash( $_GET['site'] ) ) ); }
+		$pre_prenom = isset( $_GET['prenom'] ) ? sanitize_text_field( rawurldecode( wp_unslash( $_GET['prenom'] ) ) ) : '';
+		$err        = isset( $_GET['err'] ) ? sanitize_key( wp_unslash( $_GET['err'] ) ) : '';
+		$err_txt    = array(
+			'url'    => 'Nous n\'avons pas reconnu l\'adresse de votre site. Écrivez-la simplement, par exemple : monsite.fr',
+			'email'  => 'Votre adresse email semble incomplète. Vérifiez-la : c\'est là que nous envoyons le rapport.',
+			'limite' => 'Vous avez lancé plusieurs audits à la suite. Réessayez dans une heure, ou appelez le 07.44.82.95.16.',
+		);
 		?>
 		<section style="background:linear-gradient(180deg,#0a0a0f 0%,#14141c 100%);color:#fff;padding:80px 24px;min-height:80vh">
 			<div style="max-width:680px;margin:0 auto;text-align:center">
@@ -1018,13 +1067,16 @@ if ( ! function_exists( 'ag_audit_render_form' ) ) {
 				<h1 style="font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.6rem);line-height:1.1;margin:0 0 14px">Audit SEO <em style="background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic">gratuit</em> de votre site</h1>
 				<p style="color:rgba(255,255,255,.75);font-size:1.05rem;line-height:1.6;margin:0 0 36px">Référencement, vitesse, mobile, sécurité <strong>et un score d'accessibilité (RGAA)</strong>, livré sous 30 secondes. Depuis juin 2025, l'accessibilité est obligatoire pour les sites marchands. PDF imprimable.</p>
 
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px;max-width:520px;margin:0 auto">
+				<form id="ag-audit-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px;max-width:520px;margin:0 auto;scroll-margin-top:110px">
 					<input type="hidden" name="action" value="ag_audit_request">
+					<?php if ( $err && isset( $err_txt[ $err ] ) ) : ?>
+					<p role="alert" style="margin:0;padding:14px 16px;background:rgba(192,57,43,.16);border:1px solid #e0705f;border-radius:10px;color:#ffd9d2;font-size:.95rem;line-height:1.5"><?php echo esc_html( $err_txt[ $err ] ); ?></p>
+					<?php endif; ?>
 					<?php wp_nonce_field( 'ag_audit' ); ?>
 					<input type="text" name="hp_field" value="" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
 
-					<label style="display:flex;flex-direction:column;gap:6px;font-size:.9rem;color:rgba(255,255,255,.7)">URL de votre site *
-						<input type="url" name="site_url" required value="<?php echo esc_attr( $pre_url ); ?>" placeholder="https://monsite.fr" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
+					<label style="display:flex;flex-direction:column;gap:6px;font-size:.9rem;color:rgba(255,255,255,.7)">Adresse de votre site *
+						<input type="text" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="url" name="site_url" required value="<?php echo esc_attr( $pre_url ); ?>" placeholder="monsite.fr" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
 					</label>
 					<label style="display:flex;flex-direction:column;gap:6px;font-size:.9rem;color:rgba(255,255,255,.7)">Votre prénom
 						<input type="text" name="prenom" value="<?php echo esc_attr( $pre_prenom ); ?>" placeholder="Marc" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
